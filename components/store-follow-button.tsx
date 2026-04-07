@@ -20,6 +20,7 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +53,8 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
       router.push(`/auth?tab=customer&next=${encodeURIComponent(storeProfilePath)}`);
       return;
     }
+    if (busy || loading) return;
+    setActionError(null);
     setBusy(true);
     try {
       const res = await fetch("/api/customer/follow", {
@@ -60,7 +63,7 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ storeSlug, follow: !following }),
       });
-      const data = (await res.json()) as {
+      const data = (await res.json().catch(() => ({}))) as {
         followerCount?: number;
         following?: boolean;
         error?: string;
@@ -69,7 +72,11 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
         setCount(data.followerCount);
         setFollowing(data.following);
         deferRouterAction(() => router.refresh());
+      } else {
+        setActionError(data.error ?? "Could not update follow. Try again.");
       }
+    } catch {
+      setActionError("Network error. Try again.");
     } finally {
       setBusy(false);
     }
@@ -79,12 +86,13 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
   const label = loading ? "…" : following ? "Following" : "Follow";
 
   return (
+    <div className="inline-flex flex-col items-stretch gap-1">
     <button
       type="button"
       onClick={() => void onClick()}
       disabled={busy || loading}
       className={cn(
-        "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm transition hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60",
+        "inline-flex min-h-[44px] touch-manipulation items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm transition hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60",
         following
           ? "border border-border bg-card text-foreground hover:bg-muted"
           : "bg-blue-600 text-white hover:bg-blue-700",
@@ -94,5 +102,11 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
       <span>{label}</span>
       <span className="text-xs font-normal tabular-nums opacity-90">({compact} followers)</span>
     </button>
+      {actionError ? (
+        <p className="max-w-[14rem] text-center text-xs text-destructive" role="alert">
+          {actionError}
+        </p>
+      ) : null}
+    </div>
   );
 }

@@ -76,6 +76,15 @@ textarea {
   transition-duration: 180ms;
 }
 
+/* Faster taps on mobile / PWA (removes ~300ms delay on legacy WebKit) */
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+  touch-action: manipulation;
+}
+
 /* Premium hero gradient (135° blue → green) */
 .bg-hero-gradient {
   background: linear-gradient(135deg, #2563eb, #22c55e);

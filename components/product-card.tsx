@@ -33,9 +33,12 @@ export function ProductCard({ product, compact = false, className }: ProductCard
   async function onOrderWhatsApp(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (orderBusy || authLoading) return;
     setOrderBusy(true);
     try {
       await placeOrder(product.id);
+    } catch {
+      /* redirect or handled inside hook */
     } finally {
       setOrderBusy(false);
     }

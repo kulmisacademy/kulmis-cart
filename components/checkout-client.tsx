@@ -53,7 +53,7 @@ export function CheckoutClient() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!customer) return;
+    if (!customer || submitting || lines.length === 0) return;
     setError(null);
     setSubmitting(true);
     try {
@@ -85,6 +85,8 @@ export function CheckoutClient() {
           links: data.whatsappUrls.map((w) => ({ storeName: w.storeName, url: w.url })),
         });
       }
+    } catch {
+      setError("Network error. Check your connection and try again.");
     } finally {
       setSubmitting(false);
     }

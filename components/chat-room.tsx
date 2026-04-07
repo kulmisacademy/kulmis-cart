@@ -212,6 +212,7 @@ export function ChatRoom({
   const [needsLogin, setNeedsLogin] = useState(false);
   const [persistence, setPersistence] = useState<"database" | "memory" | null>(null);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [sendBusy, setSendBusy] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const socketRef = useRef<Socket | null>(null);
   /** Set after socket server acks `join-thread` (same room as the other party). */
@@ -338,48 +339,63 @@ export function ChatRoom({
 
   async function sendText() {
     const val = text.trim();
-    if (!val || !threadId) return;
+    if (!val || !threadId || sendBusy) return;
+    setSendBusy(true);
     setSendError(null);
     setText("");
-    const res = await fetch("/api/chat/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ threadId, messageType: "text", messageText: val, contextRole: viewerRole }),
-    });
-    const data = (await res.json().catch(() => ({}))) as { message?: Message; error?: string };
-    if (res.ok && data.message) {
-      recentMessagesByThread.delete(threadId);
-      setMessages((prev) => [...prev, data.message!]);
-      emitSocketRelay(socketRef.current, data.message, socketJoinOkRef.current);
-      return;
+    try {
+      const res = await fetch("/api/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ threadId, messageType: "text", messageText: val, contextRole: viewerRole }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { message?: Message; error?: string };
+      if (res.ok && data.message) {
+        recentMessagesByThread.delete(threadId);
+        setMessages((prev) => [...prev, data.message!]);
+        emitSocketRelay(socketRef.current, data.message, socketJoinOkRef.current);
+        return;
+      }
+      setText(val);
+      setSendError(data.error ?? (res.status === 403 ? "Not allowed to send in this chat." : "Could not send. Try again."));
+    } catch {
+      setText(val);
+      setSendError("Network error. Try again.");
+    } finally {
+      setSendBusy(false);
     }
-    setText(val);
-    setSendError(data.error ?? (res.status === 403 ? "Not allowed to send in this chat." : "Could not send. Try again."));
   }
 
   async function sendProduct() {
-    if (!threadId || !initialProduct) return;
+    if (!threadId || !initialProduct || sendBusy) return;
+    setSendBusy(true);
     setSendError(null);
-    const res = await fetch("/api/chat/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        threadId,
-        messageType: "product",
-        product: initialProduct,
-        contextRole: viewerRole,
-      }),
-    });
-    const data = (await res.json().catch(() => ({}))) as { message?: Message; error?: string };
-    if (res.ok && data.message) {
-      recentMessagesByThread.delete(threadId);
-      setMessages((prev) => [...prev, data.message!]);
-      emitSocketRelay(socketRef.current, data.message, socketJoinOkRef.current);
-      return;
+    try {
+      const res = await fetch("/api/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          threadId,
+          messageType: "product",
+          product: initialProduct,
+          contextRole: viewerRole,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { message?: Message; error?: string };
+      if (res.ok && data.message) {
+        recentMessagesByThread.delete(threadId);
+        setMessages((prev) => [...prev, data.message!]);
+        emitSocketRelay(socketRef.current, data.message, socketJoinOkRef.current);
+        return;
+      }
+      setSendError(data.error ?? (res.status === 403 ? "Not allowed to send in this chat." : "Could not send product card."));
+    } catch {
+      setSendError("Network error. Try again.");
+    } finally {
+      setSendBusy(false);
     }
-    setSendError(data.error ?? (res.status === 403 ? "Not allowed to send in this chat." : "Could not send product card."));
   }
 
   const shellClass =
@@ -471,8 +487,9 @@ export function ChatRoom({
           <button
             type="button"
             title="Send product"
+            disabled={sendBusy}
             onClick={() => void sendProduct()}
-            className="mb-0.5 flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-gray-200 dark:hover:bg-slate-700"
+            className="mb-0.5 flex size-10 shrink-0 touch-manipulation items-center justify-center rounded-full text-muted-foreground transition hover:bg-gray-200 disabled:opacity-40 dark:hover:bg-slate-700"
           >
             <Paperclip className="size-5" aria-hidden />
             <span className="sr-only">Attach product</span>
@@ -487,7 +504,7 @@ export function ChatRoom({
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && !sendBusy) {
               e.preventDefault();
               void sendText();
             }
@@ -499,8 +516,8 @@ export function ChatRoom({
         <button
           type="button"
           onClick={() => void sendText()}
-          disabled={!text.trim()}
-          className="mb-0.5 flex h-10 shrink-0 items-center justify-center rounded-full bg-blue-600 px-4 text-white transition hover:scale-105 hover:bg-blue-700 disabled:opacity-40 disabled:hover:scale-100"
+          disabled={!text.trim() || sendBusy}
+          className="mb-0.5 flex h-10 shrink-0 touch-manipulation items-center justify-center rounded-full bg-blue-600 px-4 text-white transition hover:scale-105 hover:bg-blue-700 disabled:opacity-40 disabled:hover:scale-100"
           aria-label="Send message"
         >
           <Send className="size-4" />

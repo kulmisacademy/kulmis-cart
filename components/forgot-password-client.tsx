@@ -43,6 +43,7 @@ export function ForgotPasswordClient({ initialTab }: Props) {
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError(null);
     setLoading(true);
     try {
@@ -66,6 +67,7 @@ export function ForgotPasswordClient({ initialTab }: Props) {
 
   async function verifyOtp(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError(null);
     if (!/^\d{6}$/.test(otp.trim())) {
       setError("Enter the 6-digit code from your email.");
@@ -98,6 +100,7 @@ export function ForgotPasswordClient({ initialTab }: Props) {
 
   async function resetPassword(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError(null);
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");

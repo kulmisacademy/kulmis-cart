@@ -51,9 +51,12 @@ export function ProductDetailView({ product }: Props) {
   const storeHref = publicStoreHref(product.storeName, product.vendorId);
 
   async function onOrderWhatsApp() {
+    if (orderBusy || authLoading) return;
     setOrderBusy(true);
     try {
       await placeOrder(product.id);
+    } catch {
+      /* placeOrder surfaces auth redirect; swallow unexpected errors */
     } finally {
       setOrderBusy(false);
     }
@@ -85,7 +88,7 @@ export function ProductDetailView({ product }: Props) {
                     key={src + i}
                     type="button"
                     onClick={() => setActive(i)}
-                    className={`relative h-16 w-16 overflow-hidden rounded-lg border-2 transition sm:h-20 sm:w-20 ${
+                    className={`relative h-16 w-16 touch-manipulation overflow-hidden rounded-lg border-2 transition sm:h-20 sm:w-20 ${
                       active === i ? "border-brand-primary ring-2 ring-brand-primary/25 dark:ring-brand-primary/40" : "border-transparent opacity-80 hover:opacity-100"
                     }`}
                   >
@@ -122,7 +125,7 @@ export function ProductDetailView({ product }: Props) {
               <button
                 type="button"
                 onClick={() => addItem(product, 1)}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
+                className="inline-flex flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
               >
                 <ShoppingCart size={18} aria-hidden />
                 Add to cart
@@ -131,7 +134,7 @@ export function ProductDetailView({ product }: Props) {
                 type="button"
                 disabled={authLoading || orderBusy}
                 onClick={() => void onOrderWhatsApp()}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#00a884] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#009970] disabled:opacity-60 sm:flex-none"
+                className="inline-flex flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl bg-[#00a884] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#009970] disabled:opacity-60 sm:flex-none"
               >
                 <MessageCircle size={18} aria-hidden />
                 {authLoading ? "Checking…" : orderBusy ? "Opening…" : isAuthenticated ? "Order on WhatsApp" : "Login to order"}
@@ -139,7 +142,7 @@ export function ProductDetailView({ product }: Props) {
               <button
                 type="button"
                 onClick={() => setChatOpen(true)}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
+                className="inline-flex flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
               >
                 <MessageCircle size={18} aria-hidden />
                 Chat with Seller
@@ -166,13 +169,13 @@ export function ProductDetailView({ product }: Props) {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md md:hidden dark:shadow-[0_-4px_24px_rgba(0,0,0,0.4)]">
+      <div className="fixed left-0 right-0 z-50 border-t border-border bg-background/95 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md max-md:bottom-[calc(3.65rem+env(safe-area-inset-bottom,0px))] md:bottom-0 md:hidden dark:shadow-[0_-4px_24px_rgba(0,0,0,0.4)]">
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             disabled={authLoading || orderBusy}
             onClick={() => void onOrderWhatsApp()}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#00a884] py-3 text-sm font-semibold text-white hover:bg-[#009970] disabled:opacity-60"
+            className="flex w-full touch-manipulation items-center justify-center gap-2 rounded-xl bg-[#00a884] py-3 text-sm font-semibold text-white hover:bg-[#009970] disabled:opacity-60"
           >
             <MessageCircle size={18} aria-hidden />
             {authLoading ? "Checking…" : orderBusy ? "Opening…" : isAuthenticated ? "WhatsApp" : "Login"}
@@ -180,7 +183,7 @@ export function ProductDetailView({ product }: Props) {
           <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-card-foreground hover:bg-muted"
+            className="flex w-full touch-manipulation items-center justify-center gap-2 rounded-xl border border-border bg-card py-3 text-sm font-semibold text-card-foreground hover:bg-muted"
           >
             <MessageCircle size={18} aria-hidden />
             Chat seller
@@ -188,7 +191,7 @@ export function ProductDetailView({ product }: Props) {
         </div>
       </div>
 
-      <div className="h-24 md:hidden" aria-hidden />
+      <div className="h-[calc(6.5rem+env(safe-area-inset-bottom,0px))] md:hidden" aria-hidden />
 
       <ChatPopup
         open={chatOpen}

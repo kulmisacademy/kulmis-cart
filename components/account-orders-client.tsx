@@ -47,21 +47,27 @@ function OrderFeedbackBlock({
       setErr("Choose one option.");
       return;
     }
+    if (busy) return;
     setBusy(true);
     setErr(null);
-    const res = await fetch("/api/customer/feedback", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId, presetOption: preset, comment }),
-    });
-    const data = (await res.json()) as { error?: string };
-    setBusy(false);
-    if (!res.ok) {
-      setErr(data.error ?? "Could not save feedback");
-      return;
+    try {
+      const res = await fetch("/api/customer/feedback", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, presetOption: preset, comment }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        setErr(data.error ?? "Could not save feedback");
+        return;
+      }
+      onDone();
+    } catch {
+      setErr("Network error. Try again.");
+    } finally {
+      setBusy(false);
     }
-    onDone();
   }
 
   return (
@@ -75,7 +81,7 @@ function OrderFeedbackBlock({
             type="button"
             onClick={() => setPreset(label)}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-left text-sm transition",
+              "touch-manipulation rounded-full border px-3 py-1.5 text-left text-sm transition",
               preset === label
                 ? "border-blue-600 bg-blue-100 text-blue-900 dark:bg-blue-950/50 dark:text-blue-100"
                 : "border-border bg-background hover:bg-blue-50 dark:hover:bg-blue-950/30",

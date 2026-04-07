@@ -1,26 +1,187 @@
 @import "tailwindcss";
 
+/* Match next-themes: `dark:` applies when `.dark` is on <html>, not only OS preference */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #e2e8f0;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --brand-primary: #2563eb;
+  --brand-secondary: #22c55e;
+  --brand-accent: #f97316;
+  --brand-star: #facc15;
+  /* Wordmark: mint “SOM” + blue “CART” (light theme) */
+  --brand-logo-som: #0d9488;
+  --brand-logo-cart: #2563eb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-brand-primary: #2563eb;
+  --color-brand-secondary: #22c55e;
+  --color-brand-accent: #f97316;
+  --color-brand-star: #facc15;
+  --color-brand-logo-som: var(--brand-logo-som);
+  --color-brand-logo-cart: var(--brand-logo-cart);
+  --max-width-brand: 1200px;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --border: #334155;
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+  /* Brighter mint + blue on dark backgrounds */
+  --brand-logo-som: #2dd4bf;
+  --brand-logo-cart: #60a5fa;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  scroll-behavior: smooth;
+}
+
+.dark body {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+* {
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition-duration: 180ms;
+}
+
+/* Premium hero gradient (135° blue → green) */
+.bg-hero-gradient {
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+}
+
+/* Primary CTA: orange accent + smooth interaction */
+.btn-brand-accent {
+  @apply inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand-accent px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 ease-in-out sm:w-auto;
+  box-shadow: 0 4px 14px -3px rgba(249, 115, 22, 0.45);
+}
+.btn-brand-accent:hover {
+  @apply scale-105 shadow-xl;
+  filter: brightness(1.05);
+}
+.btn-brand-accent:active {
+  @apply scale-95;
+}
+
+.btn-brand-outline {
+  @apply inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-slate-200/90 bg-white/90 px-6 py-2.5 text-sm font-semibold text-brand-primary shadow-sm transition-all duration-300 ease-in-out sm:w-auto dark:border-slate-600 dark:bg-slate-900/90;
+}
+.btn-brand-outline:hover {
+  @apply scale-105 border-brand-primary/40 shadow-xl;
+}
+.btn-brand-outline:active {
+  @apply scale-95;
+}
+
+.link-brand {
+  @apply font-semibold text-brand-primary transition-all duration-300 ease-in-out hover:text-brand-primary/80 hover:underline;
+}
+
+@keyframes store-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.store-card-enter {
+  animation: store-card-rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.hero-rise-delay-1 {
+  animation-delay: 0.06s;
+}
+.hero-rise-delay-2 {
+  animation-delay: 0.12s;
+}
+.hero-rise-delay-3 {
+  animation-delay: 0.18s;
+}
+.hero-rise-delay-4 {
+  animation-delay: 0.24s;
+}
+.hero-rise-delay-5 {
+  animation-delay: 0.32s;
+}
+
+@keyframes hero-region-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-region-line {
+  animation: hero-region-slide-in 0.45s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-region-line {
+    animation: none;
+  }
+  .hero-rise {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .btn-brand-accent:hover,
+  .btn-brand-outline:hover {
+    transform: none;
+  }
 }

@@ -1,65 +1,74 @@
-import Image from "next/image";
+import { HomePageContent } from "@/components/home-page-content";
+import { PageScaffold } from "@/components/page-scaffold";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { testimonials } from "@/lib/data";
+import {
+  getFollowerCountsForStores,
+  getStoreRatingSummaries,
+} from "@/lib/customer/db";
+import { getMarketplaceProducts, getMarketplaceStores } from "@/lib/marketplace-catalog";
 
-export default function Home() {
+/** Cache the static marketplace snapshot for anonymous visitors (production). Ads still load client-side. */
+export const revalidate = 60;
+
+export default async function Home() {
+  /** `getMarketplaceProducts` + `getMarketplaceStores` share one cached vendor scan per request. */
+  const [products, allStores] = await Promise.all([getMarketplaceProducts(), getMarketplaceStores()]);
+  const featuredProducts = products.slice(0, 4);
+
+  const featuredStorePhones: Record<string, string> = {};
+  for (const p of featuredProducts) {
+    const st = allStores.find((s) => s.slug === p.storeSlug);
+    if (st?.phone) featuredStorePhones[p.storeSlug] = st.phone;
+  }
+
+  const slugs = allStores.map((s) => s.slug);
+  let summaries: Awaited<ReturnType<typeof getStoreRatingSummaries>> = {};
+  let followersBySlug: Record<string, number> = {};
+  try {
+    ;[summaries, followersBySlug] = await Promise.all([
+      getStoreRatingSummaries(slugs),
+      getFollowerCountsForStores(slugs),
+    ]);
+  } catch {
+    summaries = {};
+    followersBySlug = {};
+  }
+
+  const ranked = [...allStores]
+    .map((store) => {
+      const live = summaries[store.slug];
+      const rating = live && live.count > 0 ? live.average : store.rating;
+      const count = live && live.count > 0 ? live.count : store.totalReviews;
+      const followers = followersBySlug[store.slug] ?? 0;
+      return { store, rating, count, followers };
+    })
+    .sort((a, b) => b.rating - a.rating || b.count - a.count || b.followers - a.followers);
+
+  const topStoresSlice = ranked.slice(0, 3).map((r) => r.store);
+  const liveRatingsForTop: Record<string, { average: number; count: number }> = {};
+  const followersForTop: Record<string, number> = {};
+  for (const r of ranked.slice(0, 3)) {
+    const live = summaries[r.store.slug];
+    if (live && live.count > 0) liveRatingsForTop[r.store.slug] = live;
+    followersForTop[r.store.slug] = r.followers;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <PageScaffold>
+      <SiteHeader />
+      <main>
+        <HomePageContent
+          featuredProducts={featuredProducts}
+          topStores={topStoresSlice}
+          liveRatingsBySlug={liveRatingsForTop}
+          followersBySlug={followersForTop}
+          testimonials={testimonials}
+          featuredStorePhones={featuredStorePhones}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
       </main>
-    </div>
+      <SiteFooter />
+    </PageScaffold>
   );
 }

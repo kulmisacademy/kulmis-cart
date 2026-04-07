@@ -1,0 +1,280 @@
+{
+  "common": {
+    "brand": "KULMISCART"
+  },
+  "nav": {
+    "home": "Bogga hore",
+    "products": "Alaabta",
+    "stores": "Dukaamada",
+    "categories": "Qaybaha",
+    "cart": "Gaadhiga",
+    "account": "Akoon",
+    "messages": "Fariimaha",
+    "orders": "Dalabyada",
+    "openStore": "Fur dukaan",
+    "searchPlaceholder": "Raadi alaab ama ganacsade...",
+    "searchPlaceholderStore": "Raadi alaabta..."
+  },
+  "pwa": {
+    "tagline": "Ku rakib app-ka si aad ugu dhakhso ugu gasho shaashadda guriga.",
+    "install": "Ku rakib app-ka",
+    "howToInstall": "Sida loo rakibo",
+    "gotIt": "Haye",
+    "dismiss": "Hadda maya",
+    "desktopHint": "Chrome ama Edge: calaamadda rakibaadda barka cinwaanka, ama menu (⋮) → Install app.",
+    "iosHint": "iPhone / iPad: Share → Add to Home Screen.",
+    "androidHint": "Android: menu (⋮) → Install app ama Add to Home screen."
+  },
+  "hero": {
+    "badge": "Barta ganacsiga Soomaalida",
+    "title1": "Dhis dukaankaaga.",
+    "title2": "Iibso meel kasta",
+    "title3": "Soomaaliya.",
+    "subtitle": "KULMISCART waa hab fudud oo aad ku furto dukaanka internetka, wadaagto xiriirkaaga, oo si degdeg ah u hesho dalabyada.",
+    "ctaPrimary": "Bilow iibinta",
+    "ctaSecondary": "Eeg alaabta",
+    "trust1": "Daqiiqado gudahood furitaan",
+    "trust2": "Dalabyada WhatsApp",
+    "trust3": "Mobilka ugu horreeya",
+    "liveLabel": "Ganacsi toos ah",
+    "liveSuffix": "24/7",
+    "regions": {
+      "Banaadir": "Banaadir",
+      "Awdal": "Awdal",
+      "Woqooyi Galbeed": "Woqooyi Galbeed",
+      "Togdheer": "Togdheer",
+      "Sanaag": "Sanaag",
+      "Sool": "Sool",
+      "Bari": "Bari",
+      "Nugaal": "Nugaal",
+      "Mudug": "Mudug",
+      "Galgaduud": "Galgaduud",
+      "Hiiraan": "Hiiraan",
+      "Middle Shabelle": "Shabeelle Dhexe",
+      "Lower Shabelle": "Shabeelle Hoose",
+      "Bay": "Bay",
+      "Bakool": "Bakool",
+      "Gedo": "Gedo",
+      "Middle Juba": "Jubbada Dhexe",
+      "Lower Juba": "Jubbada Hoose"
+    },
+    "imageAlt": "Ganacsiga Soomaaliya iyo dukaanka"
+  },
+  "home": {
+    "checkoutEyebrow": "Sida aad u iibsato",
+    "checkoutRoadmapLabel": "Faa'iidooyinka iibsiga",
+    "checkoutImageAlt": "Iibsade iyo iibiye agagaarka lacag bixinta: lacag bixinta mobilka, ganacsiga diyaar u ah WhatsApp",
+    "checkoutTitle": "Lama baahna lacag bixinta adag. La xiriir iibiyayaasha toos.",
+    "checkoutB1": "Lama baahna albaab lacag bixineed",
+    "checkoutB2": "Socodka dalabka WhatsApp waa dhakhso badan",
+    "checkoutB3": "Khibrad iibsiga mobilka ugu horreysa",
+    "featuredTitle": "Alaabta la soo bandhigay",
+    "featuredViewAll": "Dhamaan →",
+    "aiEyebrow": "Ganacsatada",
+    "aiRoadmapLabel": "Tallaabooyinka liiska AI",
+    "aiStep1": "Soo rar sawir cad oo alaabtaada ah",
+    "aiStep2": "AI wuxuu qorayaa cinwaanka, qaybta, iyo sharaxaadda",
+    "aiStep3": "Ku dar dukaankaaga oo wadaag xiriirkaaga",
+    "aiImageAlt": "Iibiye miisas leh laptop, kamarad, iyo mobil — ganacsiga yaryar iyo liiska internetka",
+    "aiTitle": "Qalabka AI ee alaabta",
+    "aiDesc": "Soo rar sawirka alaabta oo ha AI ku qoro cinwaanka, qaybta, iyo sharaxaadda daqiiqado gudahood.",
+    "aiCta": "Tijaabi qalabka alaabta"
+  },
+  "testimonials": {
+    "eyebrow": "Bulshada",
+    "title": "Waxaa jecel ganacsatada & iibsadayaasha",
+    "subtitle": "Jawaab celin dhab ah oo ka timid dadka isticmaala KULMISCART."
+  },
+  "topStores": {
+    "eyebrow": "Suuqa",
+    "title": "Dukaamada ugu sarreeya",
+    "subtitle": "Ganacsato la hubo oo leh dukaamyo diyaar u ah WhatsApp."
+  },
+  "roadmap": {
+    "eyebrow": "Safarka ganacsade",
+    "title": "Daqiiqado gudahood furitaan",
+    "subtitle": "Raac wadada isdiiwaangelinta ilaa dalabka WhatsApp ugu horreeya — adigoon lacag bixin adag.",
+    "step1": "Abuur akoon",
+    "step2": "Fur dukaankaaga",
+    "step3": "Soo rar alaabta",
+    "step4": "Wadaag xiriirkaaga",
+    "step5": "Hel dalabyada WhatsApp"
+  },
+  "footer": {
+    "tagline": "© 2024 KULMISCART. Wakiilka iftiinka ganacsiga Soomaalida.",
+    "shop": "Iibsiga",
+    "products": "Alaabta",
+    "stores": "Dukaamada",
+    "company": "Shirkadda",
+    "contact": "Nala soo xiriir",
+    "privacy": "Siyaasadda asturnaanta",
+    "newsletter": "Wargeyska",
+    "emailPlaceholder": "Iimayl",
+    "subscribe": "Dir"
+  },
+  "vendor": {
+    "badge": "Booska ganacsiga",
+    "menu": "Menu",
+    "nav": {
+      "overview": "Nuqulka",
+      "products": "Alaabta",
+      "orders": "Dalabyada",
+      "messages": "Farriimaha",
+      "analytics": "Falanqaynta",
+      "settings": "Dejinta dukaanka",
+      "subscription": "Macaamiisha",
+      "logout": "Ka bax"
+    },
+    "overview": {
+      "title": "Nuqulka",
+      "subtitle": "Soo dhawoow — waa halkan xaaladda dukaankaaga.",
+      "chartTitle": "Dalabyada waqtiga",
+      "chartHint": "7 maalmood (tusaale)",
+      "recentOrders": "Dalabyada ugu dambeeyay",
+      "viewAll": "Arag dhammaan",
+      "messagesPreview": "Farriimaha WhatsApp"
+    },
+    "stats": {
+      "products": "Wadarta alaabta",
+      "orders": "Wadarta dalabyada",
+      "pending": "Dalabyada sugaya",
+      "earnings": "Dakhliga",
+      "views": "Eegista",
+      "followers": "Kuwa raacay",
+      "rating": "Qiimeynta"
+    },
+    "products": {
+      "title": "Alaabta",
+      "add": "Ku dar alaab",
+      "empty": "Alaab ma jirto.",
+      "edit": "Wax ka beddel",
+      "delete": "Tirtir",
+      "confirmDelete": "Tirtir alaabtan?",
+      "freeLimit": "Free: illaa 20 alaab iyo 10 fiidyo. Pro: AI + xad dheeraad.",
+      "aiHeading": "AI alaabta",
+      "aiHint": "Soo rar sawir. AI wuxuu soo saaraa magac, sharaxaad, astaamo.",
+      "aiFreeHint": "AI waa Pro. Ka kor Subscription.",
+      "aiCta": "AI ku abuur",
+      "aiTitle": "Magac tusaale AI",
+      "aiDescription": "Sharaxaad tusaale — wax ka beddel.",
+      "fields": {
+        "name": "Magaca alaabta",
+        "description": "Sharaxaad",
+        "features": "Astaamaha (hal khad)",
+        "price": "Qiimaha (USD)",
+        "oldPrice": "Qiimihii hore (ikhtiyaari)",
+        "category": "Qaybta",
+        "region": "Gobolka",
+        "stock": "Xaaladda kaydka",
+        "stockUnset": "Lama dhigin",
+        "video": "Fiidyo alaab (ikhtiyaari)",
+        "videoHint": "Ikhtiyaari: hal fiidyo gaaban (~1 daqiiqo ama ka yar). MP4 ama WebM waa ugu fiican; ugu badnaan 45 MB. Ilaa 4 sawir kor.",
+        "legacyVideoNote": "Alaabtan wali waxay isticmaashaa link la geliyey ka hor soo dejinta faylka. Ka saar ama hay; fiidyo cusub ayaa beddeli doona markaad doorato fayl.",
+        "images": "Sawirada alaabta",
+        "imagesHint": "1 illaa 4 sawir (ugu yaraan hal). Sawirkii ugu horreeyay waa kan kaarka."
+      },
+      "errors": {
+        "invalidVideo": "Fiidyowu ma saxna ama waa weyn yahay. Soo rar fayl taageeraya ama isticmaal link hore.",
+        "videoInvalidType": "Dooro fayl fiidyo ah (MP4, WebM, MOV, iwm).",
+        "videoTooLarge": "Faylku waa weyn yahay (ugu badnaan 45 MB).",
+        "videoTooLong": "Fiidyowu waa inuu ahaadaa 60 ilbiriqsi ama ka yar.",
+        "videoUnreadable": "Lama akhrin karo fiidyahan. Isku day fayl kale ama MP4.",
+        "imagesMin": "Ugu yaraan hal sawir ku dar.",
+        "imagesMax": "Ugu badnaan 4 sawir."
+      },
+      "stock": {
+        "in": "Kayd jira",
+        "limited": "Xaddidan"
+      },
+      "upload": "Soo rar",
+      "uploadVideo": "Soo rar fiidyo",
+      "uploadVideoSub": "Hal fayl oo keliya — dhererka la hubiyaa ka hor intaadan kaydin.",
+      "videoProcessing": "Fiidyo waa la habeynayaa…",
+      "removeImage": "Ka saar sawirka",
+      "removeVideo": "Ka saar fiidyaha",
+      "save": "Kaydi alaabta",
+      "pageTitle": "Alaabtaada",
+      "newTitle": "Ku dar alaab",
+      "editTitle": "Wax ka beddel alaab"
+    },
+    "orders": {
+      "title": "Dalabyada",
+      "subtitle": "WhatsApp isticmaal si aad ula xiriirto iibsadayaasha.",
+      "searchLabel": "Raadi dalabyada",
+      "searchPlaceholder": "Telefoon, magac, ama aqoonsiga dalabka",
+      "noSearchResults": "Ma jiro dalab ku habboon raadinta.",
+      "empty": "Dalab ma jiro.",
+      "pending": "Cusub",
+      "accepted": "La aqbalay",
+      "completed": "La dhammeeyay",
+      "accept": "Aqbal",
+      "complete": "Dhammaystir",
+      "customer": "Macmiil",
+      "total": "Wadarta",
+      "whatsapp": "WhatsApp",
+      "message": "Salaan, dalabkaaga KULMISCART."
+    },
+    "messages": {
+      "title": "Farriimaha",
+      "preview": "WhatsApp u fur si aad ugu jawaabto.",
+      "body": "Macaamiisha WhatsApp kaga soo gala dukaankaaga.",
+      "open": "Fur socodka farriimaha",
+      "whatsappCta": "WhatsApp Business"
+    },
+    "analytics": {
+      "title": "Falanqaynta",
+      "views": "Eegista dukaanka",
+      "clicks": "Guji alaabta",
+      "ordersPerDay": "Dalabyada maalin kasta",
+      "topProducts": "Alaabta ugu sareysa",
+      "hint": "Laga soo saaray dashboard-kaaga."
+    },
+    "settings": {
+      "title": "Dejinta dukaanka",
+      "save": "Kaydi dejinta",
+      "saved": "La kaydiyey",
+      "fields": {
+        "name": "Magaca dukaanka",
+        "phone": "Telefoon",
+        "whatsapp": "WhatsApp",
+        "region": "Gobolka",
+        "district": "Degmada",
+        "description": "Sharaxaad",
+        "logo": "Logo",
+        "banner": "Sawirka banner-ka"
+      },
+      "logoCurrent": "Logo hadda",
+      "logoHint": "PNG ama JPG oo laba jibbaaran ayaa fiican.",
+      "bannerCurrent": "Banner hadda",
+      "bannerHint": "Sawir ballaaran madaxa dukaanka (JPG ama PNG)."
+    },
+    "subscription": {
+      "title": "Macaamiisha",
+      "current": "Qorshaha hadda",
+      "free": "Free",
+      "pro": "Pro",
+      "upgrade": "U kor Pro",
+      "downgrade": "U beddel Free",
+      "freeDesc": "Alaab xaddidan, AI la'aan.",
+      "proDesc": "Alaab aan xad lahayn + AI.",
+      "features": {
+        "products": "Liiska alaabta",
+        "ai": "Qalabka AI"
+      }
+    },
+    "common": {
+      "cancel": "Jooji",
+      "saving": "Kaydin…",
+      "back": "Dib u noqo"
+    },
+    "login": {
+      "error": "Galitaanku wuu fashilmay",
+      "loading": "Galitaanka…"
+    }
+  },
+  "theme": {
+    "light": "Iftiin",
+    "dark": "Madow",
+    "toggle": "Beddel mawduuca"
+  }
+}

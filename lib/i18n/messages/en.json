@@ -1,0 +1,280 @@
+{
+  "common": {
+    "brand": "KULMISCART"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "stores": "Stores",
+    "categories": "Categories",
+    "cart": "Cart",
+    "account": "Account",
+    "messages": "Messages",
+    "orders": "Orders",
+    "openStore": "Open Store",
+    "searchPlaceholder": "Search for products, vendors...",
+    "searchPlaceholderStore": "Search products..."
+  },
+  "pwa": {
+    "tagline": "Install the app for quick access from your home screen.",
+    "install": "Install app",
+    "howToInstall": "How to install",
+    "gotIt": "Got it",
+    "dismiss": "Not now",
+    "desktopHint": "Chrome or Edge: click the install icon in the address bar, or open the menu (⋮) → Install KulmisCart / Install app.",
+    "iosHint": "iPhone / iPad: tap Share, then Add to Home Screen.",
+    "androidHint": "Android: open the browser menu (⋮), then Install app or Add to Home screen."
+  },
+  "hero": {
+    "badge": "Somali Commerce Platform",
+    "title1": "Build Your Store.",
+    "title2": "Sell Anywhere",
+    "title3": "in Somalia.",
+    "subtitle": "KULMISCART is a simple way to launch your online store, share your link, and receive orders instantly.",
+    "ctaPrimary": "Start Selling",
+    "ctaSecondary": "Browse Products",
+    "trust1": "Launch in minutes",
+    "trust2": "WhatsApp orders",
+    "trust3": "Mobile-first",
+    "liveLabel": "Live commerce",
+    "liveSuffix": "24/7",
+    "regions": {
+      "Banaadir": "Banaadir",
+      "Awdal": "Awdal",
+      "Woqooyi Galbeed": "Woqooyi Galbeed",
+      "Togdheer": "Togdheer",
+      "Sanaag": "Sanaag",
+      "Sool": "Sool",
+      "Bari": "Bari",
+      "Nugaal": "Nugaal",
+      "Mudug": "Mudug",
+      "Galgaduud": "Galgaduud",
+      "Hiiraan": "Hiiraan",
+      "Middle Shabelle": "Middle Shabelle",
+      "Lower Shabelle": "Lower Shabelle",
+      "Bay": "Bay",
+      "Bakool": "Bakool",
+      "Gedo": "Gedo",
+      "Middle Juba": "Middle Juba",
+      "Lower Juba": "Lower Juba"
+    },
+    "imageAlt": "Somali commerce and storefront"
+  },
+  "home": {
+    "checkoutEyebrow": "How you shop",
+    "checkoutRoadmapLabel": "Shopping benefits",
+    "checkoutImageAlt": "Shopper and seller at checkout: paying with a phone at the terminal, WhatsApp-ready commerce",
+    "checkoutTitle": "No complicated checkout. Chat directly with sellers.",
+    "checkoutB1": "No payment gateway required",
+    "checkoutB2": "Fast order flow via WhatsApp",
+    "checkoutB3": "Mobile-first shopping experience",
+    "featuredTitle": "Featured Products",
+    "featuredViewAll": "View all →",
+    "aiEyebrow": "For vendors",
+    "aiRoadmapLabel": "AI listing steps",
+    "aiStep1": "Upload a clear photo of your product",
+    "aiStep2": "AI drafts title, category, and description",
+    "aiStep3": "Publish to your store and share your link",
+    "aiImageAlt": "Seller at a desk with laptop, camera, and phone — small business and online listings",
+    "aiTitle": "AI Product Wizard",
+    "aiDesc": "Upload a product photo and let AI draft your product title, category, and description in seconds.",
+    "aiCta": "Try Product Tool"
+  },
+  "testimonials": {
+    "eyebrow": "Community",
+    "title": "Loved by sellers & shoppers",
+    "subtitle": "Real feedback from people building and buying on KULMISCART."
+  },
+  "topStores": {
+    "eyebrow": "Marketplace",
+    "title": "Top rated stores",
+    "subtitle": "Trusted vendors with strong ratings and WhatsApp-ready storefronts."
+  },
+  "roadmap": {
+    "eyebrow": "Vendor journey",
+    "title": "Launch in minutes",
+    "subtitle": "Follow the path from signup to your first WhatsApp order — no complicated checkout in between.",
+    "step1": "Create account",
+    "step2": "Open your store",
+    "step3": "Upload products",
+    "step4": "Share your link",
+    "step5": "Get orders via WhatsApp"
+  },
+  "footer": {
+    "tagline": "© 2024 KULMISCART. The radiant curator of Somali commerce.",
+    "shop": "Shop",
+    "products": "Products",
+    "stores": "Stores",
+    "company": "Company",
+    "contact": "Contact Us",
+    "privacy": "Privacy Policy",
+    "newsletter": "Newsletter",
+    "emailPlaceholder": "Email",
+    "subscribe": "Go"
+  },
+  "vendor": {
+    "badge": "Vendor dashboard",
+    "menu": "Menu",
+    "nav": {
+      "overview": "Dashboard",
+      "products": "Products",
+      "orders": "Orders",
+      "messages": "Messages",
+      "analytics": "Analytics",
+      "settings": "Store settings",
+      "subscription": "Subscription",
+      "logout": "Logout"
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "Welcome back — here is what is happening in your store today.",
+      "chartTitle": "Orders trend",
+      "chartHint": "Last 7 days (sample)",
+      "recentOrders": "Recent orders",
+      "viewAll": "View all",
+      "messagesPreview": "WhatsApp messages"
+    },
+    "stats": {
+      "products": "Total products",
+      "orders": "Total orders",
+      "pending": "Pending orders",
+      "earnings": "Total earnings",
+      "views": "Store views",
+      "followers": "Followers",
+      "rating": "Rating"
+    },
+    "products": {
+      "title": "Products",
+      "add": "Add product",
+      "empty": "No products yet.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete this product?",
+      "freeLimit": "Free plan: up to 20 products and 10 product videos total. Upgrade to Pro for AI listing and higher limits.",
+      "aiHeading": "AI listing assistant",
+      "aiHint": "Upload a product photo. AI drafts a title, description, and features — edit before saving.",
+      "aiCta": "Analyze photo with AI",
+      "aiFreeHint": "AI listing is a Pro feature. Upgrade in Subscription.",
+      "aiTitle": "Sample AI product title",
+      "aiDescription": "Sample AI product description — edit before publishing.",
+      "fields": {
+        "name": "Product name",
+        "description": "Description",
+        "features": "Features (one per line)",
+        "price": "Price (USD)",
+        "oldPrice": "Compare-at price (optional)",
+        "category": "Category",
+        "region": "Region",
+        "stock": "Stock status",
+        "stockUnset": "Not set",
+        "video": "Product video (optional)",
+        "videoHint": "Optional: one short video (about 1 minute or less). MP4 or WebM recommended; max 45 MB. Up to 4 images above.",
+        "legacyVideoNote": "This product still uses a pasted link from before file upload. Remove it or keep it; new uploads replace it when you save after choosing a file.",
+        "images": "Product images",
+        "imagesHint": "Add 1 to 4 images (at least one required). The first image is used on product cards."
+      },
+      "errors": {
+        "invalidVideo": "Video is invalid or too large. Upload a supported file or use a valid legacy link.",
+        "videoInvalidType": "Choose a video file (MP4, WebM, MOV, etc.).",
+        "videoTooLarge": "Video file is too large (max 45 MB).",
+        "videoTooLong": "Video must be 60 seconds or shorter.",
+        "videoUnreadable": "Could not read this video. Try another file or MP4 export.",
+        "imagesMin": "Add at least one image.",
+        "imagesMax": "You can add at most 4 images."
+      },
+      "stock": {
+        "in": "In stock",
+        "limited": "Limited"
+      },
+      "upload": "Upload",
+      "uploadVideo": "Upload video",
+      "uploadVideoSub": "One file only — checked for length before save.",
+      "videoProcessing": "Processing video…",
+      "removeImage": "Remove image",
+      "removeVideo": "Remove video",
+      "save": "Save product",
+      "pageTitle": "Your products",
+      "newTitle": "Add product",
+      "editTitle": "Edit product"
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Use WhatsApp from each order to contact buyers.",
+      "searchLabel": "Search orders",
+      "searchPlaceholder": "Phone, name, or order ID",
+      "noSearchResults": "No orders match this search.",
+      "empty": "No orders yet.",
+      "pending": "New",
+      "accepted": "Accepted",
+      "completed": "Completed",
+      "accept": "Accept",
+      "complete": "Mark completed",
+      "customer": "Customer",
+      "total": "Total",
+      "whatsapp": "WhatsApp",
+      "message": "Hi, about your order on KULMISCART."
+    },
+    "messages": {
+      "title": "Messages",
+      "preview": "Open WhatsApp to reply to customers faster.",
+      "body": "You can route buyers to your WhatsApp number from your storefront and order cards.",
+      "open": "Open messages flow",
+      "whatsappCta": "Open WhatsApp Business"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "views": "Store views",
+      "clicks": "Product clicks",
+      "ordersPerDay": "Orders per day",
+      "topProducts": "Top products",
+      "hint": "Built from your dashboard snapshot."
+    },
+    "settings": {
+      "title": "Store settings",
+      "save": "Save settings",
+      "saved": "Saved",
+      "fields": {
+        "name": "Store name",
+        "phone": "Phone",
+        "whatsapp": "WhatsApp",
+        "region": "Region",
+        "district": "District",
+        "description": "Description",
+        "logo": "Logo",
+        "banner": "Banner image"
+      },
+      "logoCurrent": "Current logo",
+      "logoHint": "Square PNG or JPG works best.",
+      "bannerCurrent": "Current banner",
+      "bannerHint": "Wide image for your store header (JPG or PNG, under ~2 MB recommended)."
+    },
+    "subscription": {
+      "title": "Subscription",
+      "current": "Current plan",
+      "free": "Free",
+      "pro": "Pro",
+      "upgrade": "Upgrade to Pro",
+      "downgrade": "Switch to Free",
+      "freeDesc": "Limited products, no AI.",
+      "proDesc": "Unlimited products + AI listing assistant.",
+      "features": {
+        "products": "Product listings",
+        "ai": "AI listing tools"
+      }
+    },
+    "common": {
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "back": "Back"
+    },
+    "login": {
+      "error": "Sign in failed",
+      "loading": "Signing in…"
+    }
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  }
+}

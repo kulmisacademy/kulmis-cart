@@ -180,6 +180,7 @@ export async function ensureCustomerTables(): Promise<void> {
       await sql`CREATE INDEX IF NOT EXISTS sc_customer_orders_customer_idx ON sc_customer_orders(customer_id)`;
       await sql`CREATE INDEX IF NOT EXISTS sc_customer_orders_store_slug_idx ON sc_customer_orders(store_slug)`;
       await sql`CREATE INDEX IF NOT EXISTS sc_customer_orders_customer_created_idx ON sc_customer_orders(customer_id, created_at DESC)`;
+      await sql`CREATE INDEX IF NOT EXISTS sc_customer_orders_store_created_idx ON sc_customer_orders(store_slug, created_at DESC)`;
       await sql`CREATE INDEX IF NOT EXISTS sc_customer_orders_customer_checkout_idx ON sc_customer_orders(customer_id, checkout_id)`;
       await sql`CREATE INDEX IF NOT EXISTS sc_store_feedback_store_slug_idx ON sc_store_feedback(store_slug)`;
 

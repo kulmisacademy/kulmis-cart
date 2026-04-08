@@ -136,16 +136,16 @@ export async function getMarketplaceProductIds(): Promise<string[]> {
   return ids;
 }
 
-export async function getProductById(id: string): Promise<Product | undefined> {
-  const vendors = await listApprovedVendors();
+/** One merged dashboard scan per request — avoids N sequential `loadDashboard` calls. */
+export const getProductById = cache(async function getProductById(id: string): Promise<Product | undefined> {
+  const rows = await getVendorsWithDashboardStates();
   const verified = await getVerifiedSlugSet();
-  for (const v of vendors) {
-    const state = await loadDashboard(v);
+  for (const { vendor, state } of rows) {
     const p = state.products.find((x) => x.id === id);
-    if (p) return vendorProductToProduct(p, v, state, verified.has(v.storeSlug));
+    if (p) return vendorProductToProduct(p, vendor, state, verified.has(vendor.storeSlug));
   }
   return undefined;
-}
+});
 
 export async function getProductsByStoreSlug(slug: string): Promise<Product[]> {
   const row = await getDashboardRowByStoreSlug(slug);

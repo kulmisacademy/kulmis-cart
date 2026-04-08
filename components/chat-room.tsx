@@ -305,7 +305,8 @@ export function ChatRoom({
           });
         }
 
-        // DB is source of truth: merge polls so a slow GET cannot wipe messages just appended after POST. Socket + 30s backup when realtime is configured.
+        // DB is source of truth: merge polls so a slow GET cannot wipe messages just appended after POST.
+        // When Socket.IO is connected and joined, skip interval polling — rely on socket events; poll only as fallback.
         // Do not use pull(true) here: it bypasses MIN_MESSAGES_POLL_GAP and causes a GET storm when
         // alt-tabbing between customer and vendor windows (same threadId in server logs).
         const onVisible = () => {
@@ -315,8 +316,10 @@ export function ChatRoom({
         removeVisibility = () => document.removeEventListener("visibilitychange", onVisible);
         if (socketUrl) {
           timer = window.setInterval(() => {
+            const s = socketRef.current;
+            if (s?.connected && socketJoinOkRef.current) return;
             void pull(false);
-          }, 12_000);
+          }, 45_000);
         } else {
           timer = window.setInterval(() => {
             void pull(false);

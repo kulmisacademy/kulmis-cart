@@ -5,6 +5,8 @@ import { SiteHeader } from "@/components/site-header";
 import { getFollowerCountsForStores, getStoreRatingSummaries } from "@/lib/customer/db";
 import { getStoresByRating } from "@/lib/marketplace-catalog";
 
+export const revalidate = 60;
+
 export default async function StoresPage() {
   const ordered = await getStoresByRating();
   const slugs = ordered.map((s) => s.slug);

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCustomerAuth } from "@/lib/customer-auth-context";
+import { toast } from "@/lib/toast";
 
 /**
  * Opens WhatsApp with a tracked order after ensuring the shopper is registered.
@@ -26,7 +27,7 @@ export function useCustomerOrderWhatsApp(nextPath: string) {
     });
     const data = (await res.json()) as { whatsappUrl?: string; error?: string };
     if (!res.ok) {
-      window.alert(data.error ?? "Could not start order.");
+      toast.error(data.error ?? "Could not start order.");
       return;
     }
     if (data.whatsappUrl) {

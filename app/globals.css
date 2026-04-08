@@ -117,6 +117,11 @@ input[type="reset"] {
   @apply font-semibold text-brand-primary transition-all duration-300 ease-in-out hover:text-brand-primary/80 hover:underline;
 }
 
+/* Optional: stronger tap feedback on custom buttons (overflow clips ripple-style highlights) */
+.btn-touch {
+  @apply relative overflow-hidden active:scale-[0.98] transition-transform duration-150;
+}
+
 @keyframes store-card-rise {
   from {
     opacity: 0;

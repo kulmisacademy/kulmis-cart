@@ -72,12 +72,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading ? (
-          <Loader2
-            className={cn("size-4 shrink-0 animate-spin motion-reduce:animate-none", loadingIconClass(v))}
-            aria-hidden
-          />
-        ) : null}
-        {children}
+          <>
+            <Loader2
+              className={cn("size-4 shrink-0 animate-spin motion-reduce:animate-none", loadingIconClass(v))}
+              aria-hidden
+            />
+            {children}
+          </>
+        ) : (
+          children
+        )}
       </Comp>
     );
   },

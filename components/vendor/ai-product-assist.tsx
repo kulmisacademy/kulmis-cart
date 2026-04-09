@@ -9,9 +9,11 @@ type Draft = { title: string; description: string; features: string };
 type Props = {
   onApply: (draft: Draft) => void;
   disabled?: boolean;
+  /** When API returns daily AI limit or disabled AI, show upgrade flow instead of raw error. */
+  onPlanLimit?: () => void;
 };
 
-export function AiProductAssist({ onApply, disabled }: Props) {
+export function AiProductAssist({ onApply, disabled, onPlanLimit }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,8 +33,13 @@ export function AiProductAssist({ onApply, disabled }: Props) {
         description?: string;
         features?: string[];
         error?: string;
+        code?: string;
       };
       if (!res.ok) {
+        if ((data.code === "AI_DAILY_LIMIT" || data.code === "AI_DISABLED") && onPlanLimit) {
+          onPlanLimit();
+          return;
+        }
         throw new Error(data.error ?? "Could not analyze image");
       }
       const title = typeof data.title === "string" ? data.title : "";

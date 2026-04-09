@@ -107,13 +107,19 @@ export async function PUT(request: Request) {
   const videoCount = countProductVideos(parsed.data.products);
   if (ent.productLimit != null && productCount > ent.productLimit) {
     return NextResponse.json(
-      { error: `Product limit reached for your plan (${ent.productLimit} max).` },
+      {
+        error: `Product limit reached for your plan (${ent.productLimit} max).`,
+        code: "PRODUCT_LIMIT",
+      },
       { status: 403 },
     );
   }
   if (ent.videoLimit != null && videoCount > ent.videoLimit) {
     return NextResponse.json(
-      { error: `Video limit reached for your plan (${ent.videoLimit} product videos max).` },
+      {
+        error: `Video limit reached for your plan (${ent.videoLimit} product videos max).`,
+        code: "VIDEO_LIMIT",
+      },
       { status: 403 },
     );
   }

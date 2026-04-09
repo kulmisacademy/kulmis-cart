@@ -10,9 +10,53 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
 
+function UsageRow({
+  label,
+  used,
+  cap,
+}: {
+  label: string;
+  used: number;
+  cap: number | null;
+}) {
+  const denom = cap != null ? cap : null;
+  const pct = denom != null && denom > 0 ? Math.min(100, (used / denom) * 100) : 0;
+  return (
+    <div className="space-y-1.5">
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>{label}</span>
+        <span className="tabular-nums text-foreground">
+          {used}
+          {denom != null ? ` / ${denom}` : " / ∞"}
+        </span>
+      </div>
+      {denom != null ? (
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full bg-brand-primary transition-[width] duration-300"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      ) : (
+        <div className="h-2 w-full rounded-full bg-muted/80" title="Unlimited" />
+      )}
+    </div>
+  );
+}
+
 function formatUsd(cents: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 }
+
+type UsagePayload = {
+  productCount: number;
+  videoCount: number;
+  aiUsedToday: number;
+  productLimit: number | null;
+  videoLimit: number | null;
+  aiPerDay: number | null;
+  aiEnabled: boolean;
+};
 
 export function VendorSubscriptionPage() {
   const { t } = useTranslations();
@@ -21,6 +65,7 @@ export function VendorSubscriptionPage() {
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [upgrading, setUpgrading] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
+  const [usage, setUsage] = useState<UsagePayload | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +85,22 @@ export function VendorSubscriptionPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/vendor/usage");
+        const data = (await res.json()) as UsagePayload & { error?: string };
+        if (!cancelled && !data.error) setUsage(data);
+      } catch {
+        if (!cancelled) setUsage(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.products, entitlements.planSlug]);
+
   const videoCount = countProductVideos(state.products);
   const productCount = state.products.length;
 
@@ -58,6 +119,13 @@ export function VendorSubscriptionPage() {
         return;
       }
       await refreshDashboard();
+      try {
+        const uRes = await fetch("/api/vendor/usage");
+        const u = (await uRes.json()) as UsagePayload & { error?: string };
+        if (uRes.ok && !u.error) setUsage(u);
+      } catch {
+        /* ignore */
+      }
       setBanner(null);
     } catch {
       setBanner("Network error.");
@@ -84,16 +152,27 @@ export function VendorSubscriptionPage() {
           {t("vendor.subscription.current")}:{" "}
           <span className="font-semibold text-foreground">{entitlements.planName}</span>
         </p>
-        <div className="mt-3 rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm">
+        <div className="mt-3 space-y-4 rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm">
           <p className="font-medium text-foreground">Usage</p>
-          <p className="mt-1 text-muted-foreground">
-            Products: {productCount}
-            {entitlements.productLimit != null ? ` / ${entitlements.productLimit}` : " (unlimited)"}
-          </p>
-          <p className="text-muted-foreground">
-            Videos (products with video): {videoCount}
-            {entitlements.videoLimit != null ? ` / ${entitlements.videoLimit}` : " (unlimited)"}
-          </p>
+          <UsageRow
+            label="Products"
+            used={usage?.productCount ?? productCount}
+            cap={usage?.productLimit ?? entitlements.productLimit}
+          />
+          <UsageRow
+            label="Videos (with video)"
+            used={usage?.videoCount ?? videoCount}
+            cap={usage?.videoLimit ?? entitlements.videoLimit}
+          />
+          {entitlements.aiEnabled ? (
+            <UsageRow
+              label="AI assists today (UTC)"
+              used={usage?.aiUsedToday ?? 0}
+              cap={usage?.aiPerDay ?? entitlements.aiPerDay}
+            />
+          ) : (
+            <p className="text-xs text-muted-foreground">AI listing assist is not included in your plan.</p>
+          )}
         </div>
       </div>
 
@@ -146,7 +225,12 @@ export function VendorSubscriptionPage() {
                     ) : (
                       <span className="size-4 text-center text-muted-foreground">—</span>
                     )}
-                    AI listing assist {p.ai_enabled ? "" : "(not included)"}
+                    AI listing assist{" "}
+                    {p.ai_enabled
+                      ? p.ai_per_day == null
+                        ? "(unlimited / day)"
+                        : `(max ${p.ai_per_day} / day)`
+                      : "(not included)"}
                   </p>
                 </CardContent>
                 <CardFooter>

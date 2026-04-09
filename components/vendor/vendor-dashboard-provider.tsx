@@ -11,16 +11,22 @@ import {
 import type { VendorPublic } from "@/lib/approved-vendors";
 import type { StoreEntitlements } from "@/lib/platform-db";
 import type { VendorDashboardState } from "@/lib/vendor-types";
+import { PlanLimitModal } from "./plan-limit-modal";
+import type { PlanLimitKind } from "./plan-limit-modal";
+
+export type { PlanLimitKind } from "./plan-limit-modal";
 
 type VendorDashboardContextValue = {
   state: VendorDashboardState;
   vendor: VendorPublic;
   entitlements: StoreEntitlements;
-  persist: (next: VendorDashboardState) => Promise<void>;
+  /** Returns false when save was blocked (e.g. plan limit); true when persisted. */
+  persist: (next: VendorDashboardState) => Promise<boolean>;
   saving: boolean;
   refreshEntitlements: () => Promise<void>;
   /** Reload dashboard + entitlements from server (e.g. after plan change). */
   refreshDashboard: () => Promise<void>;
+  openPlanLimitModal: (kind: PlanLimitKind) => void;
 };
 
 const VendorDashboardContext = createContext<VendorDashboardContextValue | null>(null);
@@ -39,6 +45,11 @@ export function VendorDashboardProvider({
   const [state, setState] = useState(initialState);
   const [entitlements, setEntitlements] = useState(initialEntitlements);
   const [saving, setSaving] = useState(false);
+  const [planLimitKind, setPlanLimitKind] = useState<PlanLimitKind | null>(null);
+
+  const openPlanLimitModal = useCallback((kind: PlanLimitKind) => {
+    setPlanLimitKind(kind);
+  }, []);
 
   const persist = useCallback(async (next: VendorDashboardState) => {
     setSaving(true);
@@ -52,14 +63,24 @@ export function VendorDashboardProvider({
         ok?: boolean;
         subscriptionPlan?: VendorDashboardState["subscriptionPlan"];
         error?: string;
+        code?: string;
       };
       if (!res.ok) {
+        if (res.status === 403 && body.code === "PRODUCT_LIMIT") {
+          setPlanLimitKind("product");
+          return false;
+        }
+        if (res.status === 403 && body.code === "VIDEO_LIMIT") {
+          setPlanLimitKind("video");
+          return false;
+        }
         throw new Error(body.error ?? "Save failed");
       }
       setState({
         ...next,
         subscriptionPlan: body.subscriptionPlan ?? next.subscriptionPlan,
       });
+      return true;
     } finally {
       setSaving(false);
     }
@@ -96,11 +117,23 @@ export function VendorDashboardProvider({
       saving,
       refreshEntitlements,
       refreshDashboard,
+      openPlanLimitModal,
     }),
-    [state, vendor, entitlements, persist, saving, refreshEntitlements, refreshDashboard],
+    [state, vendor, entitlements, persist, saving, refreshEntitlements, refreshDashboard, openPlanLimitModal],
   );
 
-  return <VendorDashboardContext.Provider value={value}>{children}</VendorDashboardContext.Provider>;
+  return (
+    <VendorDashboardContext.Provider value={value}>
+      {children}
+      <PlanLimitModal
+        open={planLimitKind !== null}
+        kind={planLimitKind ?? "product"}
+        onClose={() => setPlanLimitKind(null)}
+        storeName={state.settings.storeName}
+        phone={state.settings.phone}
+      />
+    </VendorDashboardContext.Provider>
+  );
 }
 
 export function useVendorDashboard() {

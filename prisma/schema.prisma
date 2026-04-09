@@ -226,6 +226,7 @@ model sc_plan_definitions {
   product_limit          Int?
   video_limit            Int?
   ai_enabled             Boolean                  @default(false)
+  ai_per_day             Int?
   featured_priority      Int                      @default(0)
   is_active              Boolean                  @default(true)
   updated_at             DateTime                 @default(now()) @db.Timestamptz(6)
@@ -270,10 +271,19 @@ model sc_store_followers {
 }
 
 model sc_store_subscriptions {
-  store_slug          String              @id
-  plan_id             String
-  expires_at          DateTime?           @db.Timestamptz(6)
-  sc_plan_definitions sc_plan_definitions @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  store_slug           String               @id
+  plan_id              String
+  expires_at           DateTime?            @db.Timestamptz(6)
+  sc_plan_definitions  sc_plan_definitions  @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sc_vendor_ai_usage   sc_vendor_ai_usage?
+}
+
+/// Daily AI assist usage per store (UTC calendar day in last_reset_date).
+model sc_vendor_ai_usage {
+  store_slug       String                @id
+  ai_used_today    Int                   @default(0)
+  last_reset_date  DateTime              @db.Date
+  sc_store_subscriptions sc_store_subscriptions @relation(fields: [store_slug], references: [store_slug], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model sc_store_view_counts {

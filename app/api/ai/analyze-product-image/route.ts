@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { findApprovedVendorById } from "@/lib/approved-vendors";
-import { getEntitlementsForStore } from "@/lib/platform-db";
+import {
+  consumeAiDailyCredit,
+  getAiUsageToday,
+  getEntitlementsForStore,
+  isPlatformDatabaseConfigured,
+} from "@/lib/platform-db";
 import { getVendorSessionCookieName, verifyVendorSession } from "@/lib/vendor-session";
 
 export const runtime = "nodejs";
@@ -35,11 +40,23 @@ export async function POST(request: Request) {
   if (!vendor) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const ent = await getEntitlementsForStore(vendor.storeSlug);
+  const storeSlug = vendor.storeSlug;
+  const ent = await getEntitlementsForStore(storeSlug);
   if (!ent.aiEnabled) {
     return NextResponse.json(
-      { error: "AI listing assist is not included in your plan. Upgrade to unlock." },
+      { error: "AI listing assist is not included in your plan. Upgrade to unlock.", code: "AI_DISABLED" },
       { status: 403 },
+    );
+  }
+
+  const cappedDaily = ent.aiPerDay != null;
+  if (cappedDaily && !isPlatformDatabaseConfigured()) {
+    return NextResponse.json(
+      {
+        error: "Daily AI limits require a configured database. Add DATABASE_URL to enable this feature.",
+        code: "TRACKING_UNAVAILABLE",
+      },
+      { status: 503 },
     );
   }
 
@@ -55,9 +72,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Field \"image\" (file) is required" }, { status: 400 });
   }
 
+  if (cappedDaily && ent.aiPerDay != null) {
+    const used = await getAiUsageToday(storeSlug);
+    if (used >= ent.aiPerDay) {
+      return NextResponse.json(
+        { error: "Daily AI limit reached for your plan. Try again tomorrow or upgrade.", code: "AI_DAILY_LIMIT" },
+        { status: 403 },
+      );
+    }
+  }
+
   const apiKey = process.env.OPENAI_API_KEY?.trim();
+
+  async function finalizeSuccessResponse(data: Record<string, unknown>) {
+    if (cappedDaily && ent.aiPerDay != null) {
+      const ok = await consumeAiDailyCredit(storeSlug, ent.aiPerDay);
+      if (!ok) {
+        return NextResponse.json(
+          { error: "Daily AI limit reached for your plan. Try again tomorrow or upgrade.", code: "AI_DAILY_LIMIT" },
+          { status: 403 },
+        );
+      }
+    }
+    return NextResponse.json(data);
+  }
+
   if (!apiKey) {
-    return NextResponse.json({ ...mockDraft(), _mock: true as const });
+    const draft = mockDraft();
+    return finalizeSuccessResponse({ ...draft, _mock: true as const });
   }
 
   try {
@@ -97,7 +139,8 @@ Use English or Somali-appropriate merchant tone. Features list: 3-6 short bullet
     if (!res.ok) {
       const err = await res.text();
       console.error("OpenAI error:", err);
-      return NextResponse.json({ ...mockDraft(), _mock: true as const, _fallback: "openai_error" });
+      const draft = mockDraft();
+      return finalizeSuccessResponse({ ...draft, _mock: true as const, _fallback: "openai_error" });
     }
 
     const data = (await res.json()) as {
@@ -106,7 +149,8 @@ Use English or Somali-appropriate merchant tone. Features list: 3-6 short bullet
     const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return NextResponse.json({ ...mockDraft(), _mock: true as const, _fallback: "parse" });
+      const draft = mockDraft();
+      return finalizeSuccessResponse({ ...draft, _mock: true as const, _fallback: "parse" });
     }
     const parsed = JSON.parse(jsonMatch[0]) as Partial<AiProductDraft>;
     const title = typeof parsed.title === "string" ? parsed.title : mockDraft().title;
@@ -115,7 +159,7 @@ Use English or Somali-appropriate merchant tone. Features list: 3-6 short bullet
       ? parsed.features.filter((x): x is string => typeof x === "string")
       : mockDraft().features;
 
-    return NextResponse.json({
+    return finalizeSuccessResponse({
       title,
       description,
       features: features.length ? features : mockDraft().features,
@@ -123,6 +167,7 @@ Use English or Somali-appropriate merchant tone. Features list: 3-6 short bullet
     });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ ...mockDraft(), _mock: true as const, _fallback: "exception" });
+    const draft = mockDraft();
+    return finalizeSuccessResponse({ ...draft, _mock: true as const, _fallback: "exception" });
   }
 }

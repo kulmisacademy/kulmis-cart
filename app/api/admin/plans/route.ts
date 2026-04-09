@@ -20,6 +20,8 @@ const patchSchema = z.object({
   product_limit: z.number().int().nonnegative().nullable().optional(),
   video_limit: z.number().int().nonnegative().nullable().optional(),
   ai_enabled: z.boolean().optional(),
+  /** Max AI assists per UTC day; empty / null = unlimited (when AI enabled). */
+  ai_per_day: z.number().int().nonnegative().nullable().optional(),
   featured_priority: z.number().int().optional(),
   is_active: z.boolean().optional(),
 });

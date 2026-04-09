@@ -99,7 +99,7 @@ type Props = { mode: "new" | "edit"; productId?: string };
 export function VendorProductForm({ mode, productId }: Props) {
   const { t } = useTranslations();
   const router = useRouter();
-  const { state, persist, saving, entitlements } = useVendorDashboard();
+  const { state, persist, saving, entitlements, openPlanLimitModal } = useVendorDashboard();
   const schema = useMemo(() => buildProductSchema(t), [t]);
 
   const existing =
@@ -164,6 +164,7 @@ export function VendorProductForm({ mode, productId }: Props) {
         form.setError("videoUrl", {
           message: `Your plan allows up to ${lim} product video${lim === 1 ? "" : "s"} across your catalog.`,
         });
+        openPlanLimitModal("video");
         return;
       }
     }
@@ -191,21 +192,26 @@ export function VendorProductForm({ mode, productId }: Props) {
       nextProducts = [...state.products, base];
     }
 
-    await persist({ ...state, products: nextProducts });
+    const ok = await persist({ ...state, products: nextProducts });
+    if (!ok) return;
     router.push("/vendor/products");
   }
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto max-w-2xl space-y-6">
       {productBlocked ? (
-        <div className="rounded-2xl border border-brand-accent/40 bg-brand-accent/10 px-4 py-3 text-sm text-foreground">
-          {t("vendor.products.freeLimit")}
+        <div className="flex flex-col gap-3 rounded-2xl border border-brand-accent/40 bg-brand-accent/10 px-4 py-3 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between">
+          <span>{t("vendor.products.freeLimit")}</span>
+          <Button type="button" className="rounded-xl" onClick={() => openPlanLimitModal("product")}>
+            Upgrade plan
+          </Button>
         </div>
       ) : null}
 
       {aiEnabledFromEntitlements(entitlements) ? (
         <AiProductAssist
           disabled={productBlocked}
+          onPlanLimit={() => openPlanLimitModal("ai")}
           onApply={(draft) => {
             form.setValue("title", draft.title);
             form.setValue("description", draft.description);

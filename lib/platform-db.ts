@@ -12,6 +12,8 @@ export type PlanDefinitionRow = {
   product_limit: number | null;
   video_limit: number | null;
   ai_enabled: boolean;
+  /** Max AI listing assists per UTC day; null = unlimited (when ai_enabled). */
+  ai_per_day: number | null;
   featured_priority: number;
   is_active: boolean;
 };
@@ -35,6 +37,8 @@ export type StoreEntitlements = {
   productLimit: number | null;
   videoLimit: number | null;
   aiEnabled: boolean;
+  /** Daily AI cap (UTC); null = unlimited when aiEnabled. */
+  aiPerDay: number | null;
   featuredPriority: number;
   priceMonthlyCents: number;
 };
@@ -43,23 +47,50 @@ function dbAvailable(): boolean {
   return Boolean(process.env.DATABASE_URL?.trim());
 }
 
+/** True when Postgres is configured (enforces subscription usage in API routes). */
+export function isPlatformDatabaseConfigured(): boolean {
+  return dbAvailable();
+}
+
+function utcDateString(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** Idempotent ALTERs for existing deployments (runs even when base tables already exist). */
+async function runPlatformSchemaMigrations(): Promise<void> {
+  if (!dbAvailable()) return;
+  const sql = getSql();
+  await sql`ALTER TABLE sc_plan_definitions ADD COLUMN IF NOT EXISTS ai_per_day INTEGER`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS sc_vendor_ai_usage (
+      store_slug TEXT PRIMARY KEY REFERENCES sc_store_subscriptions (store_slug) ON DELETE CASCADE,
+      ai_used_today INTEGER NOT NULL DEFAULT 0,
+      last_reset_date DATE NOT NULL
+    )
+  `;
+  await sql`
+    UPDATE sc_plan_definitions
+    SET ai_per_day = COALESCE(ai_per_day, 1)
+    WHERE id = 'plan_free' AND ai_per_day IS NULL
+  `;
+}
+
 export async function ensurePlatformTables(): Promise<void> {
   if (!dbAvailable()) return;
   if (!ensurePromise) {
     ensurePromise = (async () => {
       const sql = getSql();
-      if (await pgTableExists("sc_store_subscriptions")) {
-        return;
-      }
-      await sql`
+      const fresh = !(await pgTableExists("sc_store_subscriptions"));
+      if (fresh) {
+        await sql`
         CREATE TABLE IF NOT EXISTS sc_platform_settings (
           id TEXT PRIMARY KEY DEFAULT 'default',
           verification_fee_cents INTEGER NOT NULL DEFAULT 1000
         )
       `;
-      await sql`INSERT INTO sc_platform_settings (id, verification_fee_cents) VALUES ('default', 1000) ON CONFLICT (id) DO NOTHING`;
+        await sql`INSERT INTO sc_platform_settings (id, verification_fee_cents) VALUES ('default', 1000) ON CONFLICT (id) DO NOTHING`;
 
-      await sql`
+        await sql`
         CREATE TABLE IF NOT EXISTS sc_plan_definitions (
           id TEXT PRIMARY KEY,
           slug TEXT NOT NULL UNIQUE,
@@ -68,13 +99,14 @@ export async function ensurePlatformTables(): Promise<void> {
           product_limit INTEGER,
           video_limit INTEGER,
           ai_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+          ai_per_day INTEGER,
           featured_priority INTEGER NOT NULL DEFAULT 0,
           is_active BOOLEAN NOT NULL DEFAULT TRUE,
           updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
         )
       `;
 
-      await sql`
+        await sql`
         CREATE TABLE IF NOT EXISTS sc_store_subscriptions (
           store_slug TEXT PRIMARY KEY,
           plan_id TEXT NOT NULL REFERENCES sc_plan_definitions(id),
@@ -82,14 +114,14 @@ export async function ensurePlatformTables(): Promise<void> {
         )
       `;
 
-      await sql`
+        await sql`
         CREATE TABLE IF NOT EXISTS sc_store_flags (
           store_slug TEXT PRIMARY KEY,
           is_verified BOOLEAN NOT NULL DEFAULT FALSE
         )
       `;
 
-      await sql`
+        await sql`
         CREATE TABLE IF NOT EXISTS sc_verification_requests (
           id TEXT PRIMARY KEY,
           store_slug TEXT NOT NULL,
@@ -99,16 +131,18 @@ export async function ensurePlatformTables(): Promise<void> {
           resolved_at TIMESTAMPTZ
         )
       `;
-      await sql`CREATE INDEX IF NOT EXISTS sc_verification_requests_slug_idx ON sc_verification_requests(store_slug)`;
+        await sql`CREATE INDEX IF NOT EXISTS sc_verification_requests_slug_idx ON sc_verification_requests(store_slug)`;
 
-      await sql`
-        INSERT INTO sc_plan_definitions (id, slug, name, price_monthly_cents, product_limit, video_limit, ai_enabled, featured_priority)
+        await sql`
+        INSERT INTO sc_plan_definitions (id, slug, name, price_monthly_cents, product_limit, video_limit, ai_enabled, featured_priority, ai_per_day)
         VALUES
-          ('plan_free', 'free', 'Free', 0, 20, 5, false, 0),
-          ('plan_pro', 'pro', 'Pro', 1000, NULL, NULL, true, 10),
-          ('plan_premium', 'premium', 'Premium', 2999, NULL, NULL, true, 100)
+          ('plan_free', 'free', 'Free', 0, 20, 5, true, 0, 1),
+          ('plan_pro', 'pro', 'Pro', 1000, NULL, NULL, true, 10, NULL),
+          ('plan_premium', 'premium', 'Premium', 2999, NULL, NULL, true, 100, NULL)
         ON CONFLICT (id) DO NOTHING
       `;
+      }
+      await runPlatformSchemaMigrations();
     })();
   }
   try {
@@ -150,7 +184,7 @@ export async function listPlanDefinitions(): Promise<PlanDefinitionRow[]> {
   await ensurePlatformTables();
   const sql = getSql();
   const rows = (await sql`
-    SELECT id, slug, name, price_monthly_cents, product_limit, video_limit, ai_enabled, featured_priority, is_active
+    SELECT id, slug, name, price_monthly_cents, product_limit, video_limit, ai_enabled, ai_per_day, featured_priority, is_active
     FROM sc_plan_definitions
     ORDER BY featured_priority ASC, slug ASC
   `) as PlanDefinitionRow[];
@@ -162,7 +196,14 @@ export async function updatePlanDefinition(
   patch: Partial<
     Pick<
       PlanDefinitionRow,
-      "name" | "price_monthly_cents" | "product_limit" | "video_limit" | "ai_enabled" | "featured_priority" | "is_active"
+      | "name"
+      | "price_monthly_cents"
+      | "product_limit"
+      | "video_limit"
+      | "ai_enabled"
+      | "ai_per_day"
+      | "featured_priority"
+      | "is_active"
     >
   >,
 ): Promise<void> {
@@ -185,6 +226,9 @@ export async function updatePlanDefinition(
   }
   if (patch.ai_enabled !== undefined) {
     await sql`UPDATE sc_plan_definitions SET ai_enabled = ${patch.ai_enabled}, updated_at = now() WHERE id = ${planId}`;
+  }
+  if (patch.ai_per_day !== undefined) {
+    await sql`UPDATE sc_plan_definitions SET ai_per_day = ${patch.ai_per_day}, updated_at = now() WHERE id = ${planId}`;
   }
   if (patch.featured_priority !== undefined) {
     await sql`UPDATE sc_plan_definitions SET featured_priority = ${patch.featured_priority}, updated_at = now() WHERE id = ${planId}`;
@@ -227,7 +271,8 @@ export async function getEntitlementsForStore(storeSlug: string): Promise<StoreE
     planName: "Free",
     productLimit: 20,
     videoLimit: 5,
-    aiEnabled: false,
+    aiEnabled: true,
+    aiPerDay: 1,
     featuredPriority: 0,
     priceMonthlyCents: 0,
   };
@@ -249,6 +294,7 @@ export async function getEntitlementsForStore(storeSlug: string): Promise<StoreE
         p.product_limit,
         p.video_limit,
         p.ai_enabled,
+        p.ai_per_day,
         p.featured_priority,
         p.price_monthly_cents
       FROM sc_store_subscriptions s
@@ -261,6 +307,7 @@ export async function getEntitlementsForStore(storeSlug: string): Promise<StoreE
       product_limit: number | null;
       video_limit: number | null;
       ai_enabled: boolean;
+      ai_per_day: number | null;
       featured_priority: number;
       price_monthly_cents: number;
     }[];
@@ -272,11 +319,78 @@ export async function getEntitlementsForStore(storeSlug: string): Promise<StoreE
       productLimit: r.product_limit,
       videoLimit: r.video_limit,
       aiEnabled: r.ai_enabled,
+      aiPerDay: r.ai_per_day,
       featuredPriority: r.featured_priority,
       priceMonthlyCents: r.price_monthly_cents,
     };
   } catch {
     return fallback;
+  }
+}
+
+function pgDateToUtcString(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value.slice(0, 10);
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  return String(value).slice(0, 10);
+}
+
+/** AI assists used today (UTC calendar day), for dashboard display. */
+export async function getAiUsageToday(storeSlug: string): Promise<number> {
+  if (!dbAvailable()) return 0;
+  try {
+    await ensurePlatformTables();
+    const sql = getSql();
+    const today = utcDateString();
+    const rows = (await sql`
+      SELECT ai_used_today, last_reset_date
+      FROM sc_vendor_ai_usage
+      WHERE store_slug = ${storeSlug}
+      LIMIT 1
+    `) as { ai_used_today: number; last_reset_date: unknown }[];
+    const r = rows[0];
+    if (!r) return 0;
+    if (pgDateToUtcString(r.last_reset_date) < today) return 0;
+    return r.ai_used_today;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Records one successful AI listing assist for the UTC day. Returns false if the daily cap is reached.
+ * Caller must pass a positive finite daily limit (plan ai_per_day when capped).
+ */
+export async function consumeAiDailyCredit(storeSlug: string, dailyLimit: number): Promise<boolean> {
+  if (!dbAvailable() || !Number.isFinite(dailyLimit) || dailyLimit < 1) return false;
+  try {
+    await ensurePlatformTables();
+    const sql = getSql();
+    const today = utcDateString();
+    await sql`
+      INSERT INTO sc_vendor_ai_usage (store_slug, ai_used_today, last_reset_date)
+      VALUES (${storeSlug}, 0, ${today}::date)
+      ON CONFLICT (store_slug) DO NOTHING
+    `;
+    const updated = (await sql`
+      UPDATE sc_vendor_ai_usage AS u
+      SET
+        last_reset_date = CASE
+          WHEN u.last_reset_date < ${today}::date THEN ${today}::date
+          ELSE u.last_reset_date
+        END,
+        ai_used_today = CASE
+          WHEN u.last_reset_date < ${today}::date THEN 1
+          WHEN u.ai_used_today < ${dailyLimit} THEN u.ai_used_today + 1
+          ELSE u.ai_used_today
+        END
+      WHERE u.store_slug = ${storeSlug}
+        AND (u.last_reset_date < ${today}::date OR u.ai_used_today < ${dailyLimit})
+      RETURNING u.ai_used_today
+    `) as { ai_used_today: number }[];
+    return updated.length > 0;
+  } catch {
+    return false;
   }
 }
 

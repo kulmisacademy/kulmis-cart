@@ -144,7 +144,7 @@ export function AdminPlatformClient() {
                   Active
                 </label>
               </div>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 <label className="space-y-1 text-sm">
                   <span className="text-muted-foreground">Price / mo (USD)</span>
                   <Input
@@ -210,6 +210,27 @@ export function AdminPlatformClient() {
                     onChange={(e) => void updatePlan(p.id, { ai_enabled: e.target.checked })}
                   />
                   AI enabled
+                </label>
+                <label className="space-y-1 text-sm">
+                  <span className="text-muted-foreground">AI / day (empty = ∞)</span>
+                  <Input
+                    type="number"
+                    min={0}
+                    className="rounded-xl"
+                    defaultValue={p.ai_per_day ?? ""}
+                    placeholder="Unlimited"
+                    onBlur={(e) => {
+                      const raw = e.target.value.trim();
+                      if (raw === "") {
+                        void updatePlan(p.id, { ai_per_day: null });
+                        return;
+                      }
+                      const val = parseInt(raw, 10);
+                      if (!Number.isNaN(val) && val >= 0) {
+                        void updatePlan(p.id, { ai_per_day: val });
+                      }
+                    }}
+                  />
                 </label>
               </div>
             </div>

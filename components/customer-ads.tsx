@@ -45,7 +45,10 @@ function useEligibleAds(page: PageKey | null) {
     }
     let cancelled = false;
     void (async () => {
-      const res = await fetch(`/api/ads/eligible?page=${page}`, { credentials: "include" });
+      const res = await fetch(`/api/ads/eligible?page=${page}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
       const data = (await res.json()) as { ads?: EligibleAd[] };
       if (!cancelled && data.ads) setAds(data.ads);
     })();

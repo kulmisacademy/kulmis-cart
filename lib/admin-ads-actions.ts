@@ -1,8 +1,5 @@
 "use server";
 
-import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -16,6 +13,7 @@ import {
   type AdType,
   type PageTarget,
 } from "@/lib/ads-db";
+import { persistAdUploadedImage } from "@/lib/ad-image-storage";
 import { resolveMimeForUpload } from "@/lib/ad-image-upload";
 import { safeAdImageUrl } from "@/lib/ads-image-url";
 import { getAdminSessionCookieName, verifyAdminSession } from "@/lib/admin-session";
@@ -137,6 +135,7 @@ export async function createAdminAdAction(
       popupDelayMs: d.popupDelayMs ?? 0,
     });
     revalidatePath("/admin/ads");
+    revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
     console.error("createAdminAdAction:", e);
@@ -197,6 +196,7 @@ export async function updateAdminAdAction(
     const ad = await updateAd(id, patch);
     if (!ad) return { ok: false, error: "Not found" };
     revalidatePath("/admin/ads");
+    revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
     console.error("updateAdminAdAction:", e);
@@ -268,17 +268,10 @@ export async function uploadAdminAdImageAction(
     return { ok: false, error: "Invalid image type" };
   }
 
-  try {
-    const name = `${randomUUID()}.${ext}`;
-    const dir = path.join(process.cwd(), "public", "uploads", "ads");
-    await mkdir(dir, { recursive: true });
-    const buf = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(dir, name), buf);
-    const url = `/uploads/ads/${name}`;
-    revalidatePath("/admin/ads");
-    return { ok: true, url };
-  } catch (e) {
-    console.error("uploadAdminAdImageAction:", e);
-    return { ok: false, error: "Upload failed" };
-  }
+  const buf = Buffer.from(await file.arrayBuffer());
+  const out = await persistAdUploadedImage(buf, mime, ext);
+  if (!out.ok) return out;
+  revalidatePath("/admin/ads");
+  revalidatePath("/", "layout");
+  return { ok: true, url: out.url };
 }

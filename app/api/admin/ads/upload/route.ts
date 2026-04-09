@@ -1,8 +1,6 @@
-import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { persistAdUploadedImage } from "@/lib/ad-image-storage";
 import { resolveMimeForUpload } from "@/lib/ad-image-upload";
 import { getAdminSessionCookieName, verifyAdminSession } from "@/lib/admin-session";
 
@@ -65,12 +63,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid image type" }, { status: 400 });
   }
 
-  const name = `${randomUUID()}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads", "ads");
-  await mkdir(dir, { recursive: true });
   const buf = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, name), buf);
-
-  const url = `/uploads/ads/${name}`;
-  return NextResponse.json({ url });
+  const out = await persistAdUploadedImage(buf, mime, ext);
+  if (!out.ok) {
+    return NextResponse.json({ error: out.error }, { status: 400 });
+  }
+  return NextResponse.json({ url: out.url });
 }

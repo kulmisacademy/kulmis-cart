@@ -7,6 +7,9 @@ import { getCustomerById } from "@/lib/customer/db";
 import { getCustomerSessionCookieName, verifyCustomerSession } from "@/lib/customer-session";
 import { getVendorSessionCookieName, verifyVendorSession } from "@/lib/vendor-session";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const querySchema = z.object({
   page: z.enum(["home", "products", "store"]),
 });
@@ -46,7 +49,7 @@ export async function GET(request: Request) {
     const ads = await getEligibleAdsForCustomer(customer.id, customer.region, page);
     const origin = new URL(request.url).origin;
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       ads: ads.map((a) => {
         let imageUrl = a.imageUrl;
         const raw = imageUrl?.trim() ?? "";
@@ -64,6 +67,8 @@ export async function GET(request: Request) {
         };
       }),
     });
+    res.headers.set("Cache-Control", "private, no-store, max-age=0");
+    return res;
   } catch (e) {
     console.error("ads eligible:", e);
     return NextResponse.json({ ads: [] });

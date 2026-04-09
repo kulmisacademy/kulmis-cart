@@ -228,9 +228,9 @@ export function AdminAdsPage({ initialAds = [] }: { initialAds?: AdminAdListItem
                 {uploadBusy ? <span className="text-xs text-muted-foreground">Uploading…</span> : null}
               </div>
               <p className="text-[11px] text-muted-foreground">
-                JPEG, PNG, GIF, or WebP — max 3MB. Wait until the preview appears below before clicking Create. On serverless
-                hosts, prefer pasting a stable <strong className="font-medium">https://</strong> image URL. Or paste a URL
-                below instead of uploading.
+                JPEG, PNG, GIF, or WebP — max 3MB (under ~900KB on Vercel for embedded images). Wait for the preview below
+                before saving. On Vercel, uploads are stored in the database so images still show after deploy. You can also
+                paste a direct <span className="font-medium">https://</span> image URL.
               </p>
               <Input
                 value={form.imageUrl}

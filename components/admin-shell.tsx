@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  ArrowUpCircle,
   BarChart3,
   BadgeCheck,
   LayoutDashboard,
@@ -22,6 +23,7 @@ const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/vendors", label: "Vendors", icon: Users },
   { href: "/admin/stores", label: "Stores", icon: Store },
+  { href: "/admin/upgrades", label: "Upgrades", icon: ArrowUpCircle },
   { href: "/admin/platform", label: "Platform", icon: Settings2 },
   { href: "/admin/verification", label: "Verification", icon: BadgeCheck },
   { href: "/admin/products", label: "Products", icon: Package },

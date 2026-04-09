@@ -6,8 +6,8 @@ export default function AdminStoresControlPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Stores</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Assign plans, toggle verified badges, and open a full store profile (owner, products, orders, followers,
-          ratings).
+          Read-only plan and verification status — use Upgrade requests and Verification to approve changes. Open a
+          store for full profile (products, orders, followers, ratings).
         </p>
       </div>
       <AdminStoresClient />

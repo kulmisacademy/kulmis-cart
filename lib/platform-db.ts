@@ -73,6 +73,23 @@ async function runPlatformSchemaMigrations(): Promise<void> {
     SET ai_per_day = COALESCE(ai_per_day, 1)
     WHERE id = 'plan_free' AND ai_per_day IS NULL
   `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS sc_upgrade_requests (
+      id TEXT PRIMARY KEY,
+      vendor_id TEXT NOT NULL,
+      store_slug TEXT NOT NULL,
+      store_name TEXT NOT NULL,
+      email TEXT NOT NULL DEFAULT '',
+      phone TEXT NOT NULL,
+      plan_id TEXT NOT NULL REFERENCES sc_plan_definitions (id),
+      message TEXT,
+      status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected')),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      resolved_at TIMESTAMPTZ
+    )
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS sc_upgrade_requests_status_idx ON sc_upgrade_requests(status)`;
+  await sql`CREATE INDEX IF NOT EXISTS sc_upgrade_requests_vendor_idx ON sc_upgrade_requests(vendor_id)`;
 }
 
 export async function ensurePlatformTables(): Promise<void> {
@@ -543,4 +560,135 @@ export async function waiveAndApproveVerificationRequest(requestId: string): Pro
     WHERE id = ${requestId}
   `;
   await setStoreVerified(row.store_slug, true);
+}
+
+export type UpgradeRequestRow = {
+  id: string;
+  vendor_id: string;
+  store_slug: string;
+  store_name: string;
+  email: string;
+  phone: string;
+  plan_id: string;
+  plan_name: string;
+  message: string | null;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+  resolved_at: string | null;
+};
+
+export async function createUpgradeRequest(input: {
+  vendorId: string;
+  storeSlug: string;
+  storeName: string;
+  email: string;
+  phone: string;
+  planId: string;
+  message?: string;
+}): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  if (!dbAvailable()) return { ok: false, error: "Database not configured." };
+  try {
+    await ensurePlatformTables();
+    const sql = getSql();
+    const plans = await listPlanDefinitions();
+    const target = plans.find((p) => p.id === input.planId && p.is_active);
+    if (!target) {
+      return { ok: false, error: "Unknown or inactive plan." };
+    }
+    const ent = await getEntitlementsForStore(input.storeSlug);
+    if (ent.planSlug === target.slug) {
+      return { ok: false, error: "You are already on this plan." };
+    }
+    const pending = (await sql`
+      SELECT id FROM sc_upgrade_requests
+      WHERE vendor_id = ${input.vendorId} AND status = 'pending'
+      LIMIT 1
+    `) as { id: string }[];
+    if (pending.length) {
+      return { ok: false, error: "You already have a pending upgrade request." };
+    }
+    const id = randomUUID();
+    const msg = input.message?.trim() || null;
+    await sql`
+      INSERT INTO sc_upgrade_requests (
+        id, vendor_id, store_slug, store_name, email, phone, plan_id, message, status
+      )
+      VALUES (
+        ${id},
+        ${input.vendorId},
+        ${input.storeSlug},
+        ${input.storeName},
+        ${input.email.trim()},
+        ${input.phone.trim()},
+        ${input.planId},
+        ${msg},
+        'pending'
+      )
+    `;
+    return { ok: true, id };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Request failed";
+    return { ok: false, error: msg };
+  }
+}
+
+export async function listUpgradeRequests(): Promise<UpgradeRequestRow[]> {
+  if (!dbAvailable()) return [];
+  await ensurePlatformTables();
+  const sql = getSql();
+  return (await sql`
+    SELECT
+      r.id,
+      r.vendor_id,
+      r.store_slug,
+      r.store_name,
+      r.email,
+      r.phone,
+      r.plan_id,
+      p.name AS plan_name,
+      r.message,
+      r.status,
+      r.created_at::text,
+      r.resolved_at::text
+    FROM sc_upgrade_requests r
+    JOIN sc_plan_definitions p ON p.id = r.plan_id
+    ORDER BY
+      CASE r.status WHEN 'pending' THEN 0 ELSE 1 END,
+      r.created_at DESC
+  `) as UpgradeRequestRow[];
+}
+
+export async function approveUpgradeRequest(requestId: string): Promise<void> {
+  if (!dbAvailable()) throw new Error("Database not configured");
+  await ensurePlatformTables();
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT store_slug, plan_id, status
+    FROM sc_upgrade_requests
+    WHERE id = ${requestId}
+    LIMIT 1
+  `) as { store_slug: string; plan_id: string; status: string }[];
+  const row = rows[0];
+  if (!row || row.status !== "pending") {
+    throw new Error("Request not found or already resolved.");
+  }
+  await setStorePlan(row.store_slug, row.plan_id);
+  await sql`
+    UPDATE sc_upgrade_requests
+    SET status = 'approved', resolved_at = now()
+    WHERE id = ${requestId}
+  `;
+}
+
+export async function rejectUpgradeRequest(requestId: string): Promise<void> {
+  if (!dbAvailable()) throw new Error("Database not configured");
+  await ensurePlatformTables();
+  const sql = getSql();
+  const rows = (await sql`
+    UPDATE sc_upgrade_requests
+    SET status = 'rejected', resolved_at = now()
+    WHERE id = ${requestId} AND status = 'pending'
+    RETURNING id
+  `) as { id: string }[];
+  if (!rows.length) throw new Error("Request not found or already resolved.");
 }

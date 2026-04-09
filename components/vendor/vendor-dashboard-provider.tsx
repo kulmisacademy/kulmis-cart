@@ -131,6 +131,7 @@ export function VendorDashboardProvider({
         onClose={() => setPlanLimitKind(null)}
         storeName={state.settings.storeName}
         phone={state.settings.phone}
+        email={vendor.email}
       />
     </VendorDashboardContext.Provider>
   );

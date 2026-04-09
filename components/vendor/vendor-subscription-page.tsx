@@ -9,6 +9,7 @@ import type { PlanDefinitionRow } from "@/lib/platform-db";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
+import { VendorUpgradeRequestModal } from "./vendor-upgrade-request-modal";
 
 function UsageRow({
   label,
@@ -60,12 +61,13 @@ type UsagePayload = {
 
 export function VendorSubscriptionPage() {
   const { t } = useTranslations();
-  const { state, entitlements, saving, refreshDashboard } = useVendorDashboard();
+  const { state, entitlements, saving, refreshDashboard, vendor } = useVendorDashboard();
   const [plans, setPlans] = useState<PlanDefinitionRow[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
-  const [upgrading, setUpgrading] = useState<string | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
   const [usage, setUsage] = useState<UsagePayload | null>(null);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [upgradePlanId, setUpgradePlanId] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -104,36 +106,6 @@ export function VendorSubscriptionPage() {
   const videoCount = countProductVideos(state.products);
   const productCount = state.products.length;
 
-  async function selectPlan(planId: string) {
-    setBanner(null);
-    setUpgrading(planId);
-    try {
-      const res = await fetch("/api/vendor/subscription", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId }),
-      });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) {
-        setBanner(data.error ?? "Could not change plan.");
-        return;
-      }
-      await refreshDashboard();
-      try {
-        const uRes = await fetch("/api/vendor/usage");
-        const u = (await uRes.json()) as UsagePayload & { error?: string };
-        if (uRes.ok && !u.error) setUsage(u);
-      } catch {
-        /* ignore */
-      }
-      setBanner(null);
-    } catch {
-      setBanner("Network error.");
-    } finally {
-      setUpgrading(null);
-    }
-  }
-
   const currentPlanId =
     plans.find((p) => p.slug === entitlements.planSlug)?.id ??
     (entitlements.planSlug === "free"
@@ -141,6 +113,8 @@ export function VendorSubscriptionPage() {
       : entitlements.planSlug === "pro"
         ? "plan_pro"
         : "plan_premium");
+
+  const upgradeChoices = plans.filter((p) => p.id !== currentPlanId);
 
   return (
     <div className="space-y-6">
@@ -208,7 +182,7 @@ export function VendorSubscriptionPage() {
                 <CardHeader>
                   <CardTitle className="text-xl">{p.name}</CardTitle>
                   <p className="text-2xl font-bold tabular-nums text-foreground">{formatUsd(p.price_monthly_cents)}</p>
-                  <p className="text-xs text-muted-foreground">per month (demo — connect billing for production)</p>
+                  <p className="text-xs text-muted-foreground">per month — admin approves upgrades</p>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <p className="flex items-center gap-2">
@@ -238,18 +212,14 @@ export function VendorSubscriptionPage() {
                     type="button"
                     className="w-full rounded-xl"
                     variant={isCurrent ? "secondary" : "default"}
-                    disabled={isCurrent || saving || upgrading !== null}
-                    onClick={() => void selectPlan(p.id)}
+                    disabled={isCurrent || saving}
+                    onClick={() => {
+                      if (isCurrent) return;
+                      setUpgradePlanId(p.id);
+                      setUpgradeOpen(true);
+                    }}
                   >
-                    {upgrading === p.id ? (
-                      <>
-                        <Loader2 className="mr-2 size-4 animate-spin" /> Updating…
-                      </>
-                    ) : isCurrent ? (
-                      "Current plan"
-                    ) : (
-                      t("vendor.subscription.upgrade")
-                    )}
+                    {isCurrent ? "Current plan" : "Request upgrade"}
                   </Button>
                 </CardFooter>
               </Card>
@@ -257,6 +227,28 @@ export function VendorSubscriptionPage() {
           })}
         </div>
       )}
+
+      <VendorUpgradeRequestModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        defaultPlanId={upgradePlanId || upgradeChoices[0]?.id || ""}
+        plans={upgradeChoices.length ? upgradeChoices : plans}
+        storeName={state.settings.storeName}
+        phone={state.settings.phone}
+        email={vendor.email}
+        onSubmitted={() => {
+          void refreshDashboard();
+          void (async () => {
+            try {
+              const uRes = await fetch("/api/vendor/usage");
+              const u = (await uRes.json()) as UsagePayload & { error?: string };
+              if (uRes.ok && !u.error) setUsage(u);
+            } catch {
+              /* ignore */
+            }
+          })();
+        }}
+      />
     </div>
   );
 }

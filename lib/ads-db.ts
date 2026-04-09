@@ -82,14 +82,18 @@ export async function ensureAdsTables(): Promise<void> {
 }
 
 function rowToAd(r: Record<string, unknown>): AdRow {
+  const img =
+    (r.image_url as string | null | undefined) ??
+    (r.imageUrl as string | null | undefined) ??
+    null;
   return {
     id: r.id as string,
     title: r.title as string,
     type: r.type as AdType,
-    imageUrl: (r.image_url as string | null) ?? null,
+    imageUrl: img ?? null,
     description: (r.description as string | null) ?? null,
     link: (r.link as string | null) ?? null,
-    regionTarget: (r.region_target as string | null) ?? null,
+    regionTarget: (r.region_target as string | null) ?? (r.regionTarget as string | null) ?? null,
     pageTarget: r.page_target as PageTarget,
     isActive: Boolean(r.is_active),
     maxViewsPerUser:

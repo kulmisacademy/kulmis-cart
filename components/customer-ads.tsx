@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { ImageIcon, X } from "lucide-react";
 import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { cn } from "@/lib/utils";
 
@@ -79,33 +79,97 @@ async function recordClick(adId: string) {
   });
 }
 
-function BannerBlock({
+/** Normalize image src for <img> (relative paths stay same-origin). */
+function adImageSrc(url: string): string {
+  const t = url.trim();
+  if (t.startsWith("/") || t.startsWith("http://") || t.startsWith("https://") || t.startsWith("data:")) {
+    return t;
+  }
+  return t;
+}
+
+function AdImage({
+  src,
+  alt,
+  className,
+  imgClassName,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  imgClassName?: string;
+}) {
+  const [broken, setBroken] = useState(false);
+  if (broken) {
+    return (
+      <div
+        className={cn(
+          "flex w-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground",
+          className,
+        )}
+      >
+        <ImageIcon className="size-10 opacity-50" aria-hidden />
+        <span className="text-xs">Image unavailable</span>
+      </div>
+    );
+  }
+  return (
+    <div className={cn("relative w-full overflow-hidden bg-muted/60", className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={adImageSrc(src)}
+        alt={alt}
+        className={cn("h-full w-full object-cover", imgClassName)}
+        loading="lazy"
+        decoding="async"
+        onError={() => setBroken(true)}
+      />
+    </div>
+  );
+}
+
+function PromoCard({
   ad,
   page,
+  denseTitle,
 }: {
   ad: EligibleAd;
   page: PageKey;
+  /** Text-only strip uses slightly smaller typography */
+  denseTitle?: boolean;
 }) {
   useEffect(() => {
     recordViewOnce(page, ad.id);
   }, [ad.id, page]);
 
-  const inner = (
+  const hasImage = Boolean(ad.imageUrl?.trim());
+
+  const body = (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl",
+        "overflow-hidden rounded-2xl border border-border bg-card shadow-md ring-1 ring-border/40 transition-all duration-300",
+        "hover:shadow-xl hover:ring-brand-primary/25",
         ad.link && "cursor-pointer",
       )}
     >
-      {ad.imageUrl ? (
-        <div className="flex min-h-[140px] w-full items-center justify-center bg-muted/80">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ad.imageUrl} alt="" className="max-h-40 w-full object-contain p-2" />
-        </div>
+      {hasImage ? (
+        <AdImage
+          src={ad.imageUrl!}
+          alt={ad.title}
+          className="aspect-[21/9] min-h-[140px] max-h-[220px] sm:min-h-[160px] sm:max-h-[260px]"
+          imgClassName="object-cover object-center"
+        />
       ) : null}
-      <div className="min-w-0 p-3">
-        <p className="text-sm font-semibold text-foreground">{ad.title}</p>
-        {ad.description ? <p className="mt-1 text-xs text-muted-foreground"> {ad.description}</p> : null}
+      <div className="min-w-0 space-y-1.5 p-4 sm:p-5">
+        <p className={cn("font-semibold leading-snug text-foreground", denseTitle ? "text-sm" : "text-base")}>
+          {ad.title}
+        </p>
+        {ad.description ? (
+          <p className="text-sm leading-relaxed text-muted-foreground">{ad.description}</p>
+        ) : null}
+        {ad.link ? (
+          <p className="pt-1 text-xs font-medium text-brand-primary">Tap to open link →</p>
+        ) : null}
       </div>
     </div>
   );
@@ -119,17 +183,24 @@ function BannerBlock({
         className="block w-full"
         onClick={() => void recordClick(ad.id)}
       >
-        {inner}
+        {body}
       </a>
     );
   }
-  return inner;
+  return body;
 }
 
 function TextStrip({ ad, page }: { ad: EligibleAd; page: PageKey }) {
+  const hasImage = Boolean(ad.imageUrl?.trim());
+
   useEffect(() => {
+    if (hasImage) return;
     recordViewOnce(page, ad.id);
-  }, [ad.id, page]);
+  }, [ad.id, page, hasImage]);
+
+  if (hasImage) {
+    return <PromoCard ad={ad} page={page} denseTitle />;
+  }
 
   const content = (
     <p className="text-center text-sm text-foreground">
@@ -149,10 +220,15 @@ function TextStrip({ ad, page }: { ad: EligibleAd; page: PageKey }) {
   );
 
   return (
-    <div className="rounded-xl border border-border bg-card/95 px-4 py-2 shadow-sm backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/95 px-4 py-3 shadow-md ring-1 ring-border/30 backdrop-blur-md">
       {content}
     </div>
   );
+}
+
+/** @deprecated Use PromoCard — kept as alias for banner type */
+function BannerBlock({ ad, page }: { ad: EligibleAd; page: PageKey }) {
+  return <PromoCard ad={ad} page={page} />;
 }
 
 function PopupModal({ ad, page }: { ad: EligibleAd; page: PageKey }) {
@@ -187,30 +263,32 @@ function PopupModal({ ad, page }: { ad: EligibleAd; page: PageKey }) {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true">
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card shadow-2xl ring-1 ring-border/50">
         <button
           type="button"
-          className="absolute right-2 top-2 z-10 rounded-full bg-background/90 p-1.5 text-foreground shadow hover:bg-muted"
+          className="absolute right-2 top-2 z-10 rounded-full bg-background/95 p-1.5 text-foreground shadow-md hover:bg-muted"
           onClick={close}
           aria-label="Close ad"
         >
           <X className="size-5" />
         </button>
-        {ad.imageUrl ? (
-          <div className="flex max-h-48 w-full items-center justify-center bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={ad.imageUrl} alt="" className="max-h-48 w-full object-contain p-4" />
-          </div>
+        {ad.imageUrl?.trim() ? (
+          <AdImage
+            src={ad.imageUrl}
+            alt={ad.title}
+            className="max-h-56 sm:max-h-64"
+            imgClassName="max-h-56 object-contain object-center sm:max-h-64"
+          />
         ) : null}
-        <div className="p-4">
+        <div className="p-4 sm:p-5">
           <h3 className="text-lg font-semibold text-foreground">{ad.title}</h3>
-          {ad.description ? <p className="mt-2 text-sm text-muted-foreground">{ad.description}</p> : null}
+          {ad.description ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{ad.description}</p> : null}
           {ad.link ? (
             <a
               href={ad.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="mt-4 inline-flex rounded-xl bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-105"
               onClick={() => void recordClick(ad.id)}
             >
               Open link
@@ -240,14 +318,15 @@ export function CustomerAds() {
       {(banners.length > 0 || texts.length > 0) && (
         <div
           key={stackKey}
-          className="pointer-events-none fixed inset-x-0 top-14 z-30 flex max-h-[50vh] flex-col gap-2 overflow-y-auto px-3 pb-2 sm:top-16 sm:px-4"
+          className="pointer-events-none fixed inset-x-0 top-14 z-30 flex max-h-[min(50vh,420px)] flex-col gap-3 overflow-y-auto px-3 pb-2 sm:top-16 sm:px-4"
         >
-          <div className="pointer-events-auto mx-auto flex w-full max-w-4xl flex-col gap-2">
-            {texts.map((ad) => (
-              <TextStrip key={ad.id} ad={ad} page={page} />
-            ))}
+          <div className="pointer-events-auto mx-auto flex w-full max-w-3xl flex-col gap-3">
+            {/* Image promos first so visuals are not buried under text strips */}
             {banners.map((ad) => (
               <BannerBlock key={ad.id} ad={ad} page={page} />
+            ))}
+            {texts.map((ad) => (
+              <TextStrip key={ad.id} ad={ad} page={page} />
             ))}
           </div>
         </div>

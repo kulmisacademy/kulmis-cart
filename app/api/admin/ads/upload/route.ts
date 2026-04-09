@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { resolveMimeForUpload } from "@/lib/ad-image-upload";
 import { getAdminSessionCookieName, verifyAdminSession } from "@/lib/admin-session";
 
 export const runtime = "nodejs";
@@ -48,9 +49,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "File too large (max 3MB)" }, { status: 400 });
   }
 
-  const mime = file.type || "";
+  const mime = resolveMimeForUpload(file);
   if (!ALLOWED.has(mime)) {
-    return NextResponse.json({ error: "Use JPEG, PNG, GIF, or WebP" }, { status: 400 });
+    return NextResponse.json(
+      {
+        error:
+          "Use JPEG, PNG, GIF, or WebP. If the file is valid, save it as .png/.jpg or paste an https image URL in the ad form.",
+      },
+      { status: 400 },
+    );
   }
 
   const ext = extForMime(mime);

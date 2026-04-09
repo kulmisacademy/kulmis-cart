@@ -16,6 +16,7 @@ import {
   type AdType,
   type PageTarget,
 } from "@/lib/ads-db";
+import { resolveMimeForUpload } from "@/lib/ad-image-upload";
 import { safeAdImageUrl } from "@/lib/ads-image-url";
 import { getAdminSessionCookieName, verifyAdminSession } from "@/lib/admin-session";
 
@@ -253,9 +254,13 @@ export async function uploadAdminAdImageAction(
     return { ok: false, error: "File too large (max 3MB)" };
   }
 
-  const mime = file.type || "";
+  const mime = resolveMimeForUpload(file);
   if (!ALLOWED.has(mime)) {
-    return { ok: false, error: "Use JPEG, PNG, GIF, or WebP" };
+    return {
+      ok: false,
+      error:
+        "Use JPEG, PNG, GIF, or WebP. If you picked a valid file, the browser may not have sent its type — try renaming to end in .png or .jpg, or paste an https image URL instead.",
+    };
   }
 
   const ext = extForMime(mime);

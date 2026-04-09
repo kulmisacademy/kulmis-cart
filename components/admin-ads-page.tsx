@@ -85,6 +85,10 @@ export function AdminAdsPage({ initialAds = [] }: { initialAds?: AdminAdListItem
 
   async function createOrUpdate(e: React.FormEvent) {
     e.preventDefault();
+    if (uploadBusy) {
+      setErr("Wait for the image upload to finish, then save again.");
+      return;
+    }
     setSaving(true);
     setErr(null);
     try {
@@ -223,7 +227,11 @@ export function AdminAdsPage({ initialAds = [] }: { initialAds?: AdminAdListItem
                 />
                 {uploadBusy ? <span className="text-xs text-muted-foreground">Uploading…</span> : null}
               </div>
-              <p className="text-[11px] text-muted-foreground">JPEG, PNG, GIF, or WebP — max 3MB. Or paste a URL below.</p>
+              <p className="text-[11px] text-muted-foreground">
+                JPEG, PNG, GIF, or WebP — max 3MB. Wait until the preview appears below before clicking Create. On serverless
+                hosts, prefer pasting a stable <strong className="font-medium">https://</strong> image URL. Or paste a URL
+                below instead of uploading.
+              </p>
               <Input
                 value={form.imageUrl}
                 onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}

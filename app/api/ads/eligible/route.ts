@@ -44,16 +44,25 @@ export async function GET(request: Request) {
     }
 
     const ads = await getEligibleAdsForCustomer(customer.id, customer.region, page);
+    const origin = new URL(request.url).origin;
+
     return NextResponse.json({
-      ads: ads.map((a) => ({
-        id: a.id,
-        title: a.title,
-        type: a.type,
-        imageUrl: a.imageUrl,
-        description: a.description,
-        link: a.link,
-        popupDelayMs: a.popupDelayMs,
-      })),
+      ads: ads.map((a) => {
+        let imageUrl = a.imageUrl;
+        const raw = imageUrl?.trim() ?? "";
+        if (raw.startsWith("/")) {
+          imageUrl = `${origin}${raw}`;
+        }
+        return {
+          id: a.id,
+          title: a.title,
+          type: a.type,
+          imageUrl,
+          description: a.description,
+          link: a.link,
+          popupDelayMs: a.popupDelayMs,
+        };
+      }),
     });
   } catch (e) {
     console.error("ads eligible:", e);

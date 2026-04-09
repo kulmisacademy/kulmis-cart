@@ -93,18 +93,21 @@ function AdImage({
   alt,
   className,
   imgClassName,
+  variant = "cover",
 }: {
   src: string;
   alt: string;
   className?: string;
   imgClassName?: string;
+  /** Popups use contain + min height so the image is always visible */
+  variant?: "cover" | "contain";
 }) {
   const [broken, setBroken] = useState(false);
   if (broken) {
     return (
       <div
         className={cn(
-          "flex w-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground",
+          "flex min-h-[160px] w-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground",
           className,
         )}
       >
@@ -114,12 +117,21 @@ function AdImage({
     );
   }
   return (
-    <div className={cn("relative w-full overflow-hidden bg-muted/60", className)}>
+    <div
+      className={cn(
+        "relative w-full min-h-[140px] overflow-hidden bg-muted/60",
+        variant === "contain" && "min-h-[200px] sm:min-h-[220px]",
+        className,
+      )}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={adImageSrc(src)}
         alt={alt}
-        className={cn("h-full w-full object-cover", imgClassName)}
+        className={cn(
+          variant === "cover" ? "h-full min-h-[140px] w-full object-cover" : "h-full min-h-[200px] w-full object-contain object-center sm:min-h-[220px]",
+          imgClassName,
+        )}
         loading="lazy"
         decoding="async"
         onError={() => setBroken(true)}
@@ -273,12 +285,7 @@ function PopupModal({ ad, page }: { ad: EligibleAd; page: PageKey }) {
           <X className="size-5" />
         </button>
         {ad.imageUrl?.trim() ? (
-          <AdImage
-            src={ad.imageUrl}
-            alt={ad.title}
-            className="max-h-56 sm:max-h-64"
-            imgClassName="max-h-56 object-contain object-center sm:max-h-64"
-          />
+          <AdImage src={ad.imageUrl} alt={ad.title} variant="contain" />
         ) : null}
         <div className="p-4 sm:p-5">
           <h3 className="text-lg font-semibold text-foreground">{ad.title}</h3>

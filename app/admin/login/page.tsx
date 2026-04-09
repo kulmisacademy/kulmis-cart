@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
         <BrandLogo href={null} size="md" />
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">Admin sign in</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Approve vendors and platform settings. Store owners sign in on{" "}
+          Platform administration only. Store owners sign in on{" "}
           <Link href="/auth?tab=store" className="font-medium text-brand-primary hover:underline">
             Vendor / Store auth
           </Link>

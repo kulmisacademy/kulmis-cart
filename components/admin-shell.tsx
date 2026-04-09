@@ -16,6 +16,7 @@ import {
 import { BrandLogo } from "@/components/brand-logo";
 import { NotificationBell } from "@/components/notification-bell";
 import { DashboardShell } from "@/components/dashboard-shell";
+import { getAdminLoginUrlPublic } from "@/lib/admin-login-public";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -34,7 +35,7 @@ export function AdminShell({ email, children }: { email: string; children: React
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST", credentials: "include" });
-    router.push("/admin/login");
+    router.push(getAdminLoginUrlPublic());
   }
 
   const sidebarBrand = (

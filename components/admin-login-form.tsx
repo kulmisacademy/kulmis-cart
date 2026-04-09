@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 export function AdminLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [accessKey, setAccessKey] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +21,11 @@ export function AdminLoginForm() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          accessKey: accessKey.trim(),
+        }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
@@ -38,6 +43,21 @@ export function AdminLoginForm() {
   return (
     <form suppressHydrationWarning className="mx-auto mt-8 max-w-md space-y-4" onSubmit={onSubmit}>
       {error ? <p className="rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
+      <div className="space-y-2">
+        <label htmlFor="admin-access-key" className="text-sm font-medium text-foreground">
+          Admin access key
+        </label>
+        <Input
+          id="admin-access-key"
+          type="password"
+          autoComplete="off"
+          value={accessKey}
+          onChange={(e) => setAccessKey(e.target.value)}
+          className="rounded-xl"
+          placeholder="Required when set in server environment"
+        />
+        <p className="text-xs text-muted-foreground">Leave blank if your deployment does not use ADMIN_ACCESS_KEY.</p>
+      </div>
       <div className="space-y-2">
         <label htmlFor="admin-email" className="text-sm font-medium text-foreground">
           Email

@@ -4,6 +4,7 @@ import { DollarSign, Eye, Heart, Package, ShoppingCart, Star } from "lucide-reac
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "@/lib/locale-context";
+import { cn } from "@/lib/utils";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
 
 type StoreInsights = {
@@ -55,84 +56,100 @@ export function VendorOverview() {
   const followers = insights?.followers ?? 0;
   const views = insights?.views ?? state.analytics?.totalViews ?? 0;
 
-  const cardClass =
-    "rounded-2xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md dark:bg-slate-900 dark:border-slate-800";
+  const cardClass = cn(
+    "rounded-2xl border border-border bg-card shadow-sm transition-all duration-300",
+    "hover:shadow-xl hover:border-brand-primary/20 dark:bg-slate-900 dark:border-slate-800",
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{t("vendor.overview.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("vendor.overview.subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.products")}</CardTitle>
-            <Package className="size-4 text-brand-primary" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-2xl font-bold tabular-nums text-foreground">{totalProducts}</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Store views</CardTitle>
-            <Eye className="size-4 text-cyan-500" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-2xl font-bold tabular-nums text-foreground">{views.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.orders")}</CardTitle>
-            <ShoppingCart className="size-4 text-brand-secondary" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-2xl font-bold tabular-nums text-foreground">{totalOrders}</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.earnings")}</CardTitle>
-            <DollarSign className="size-4 text-brand-accent" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-2xl font-bold tabular-nums text-foreground">${earnings.toFixed(0)}</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.followers")}</CardTitle>
-            <Heart className="size-4 text-red-500" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-2xl font-bold tabular-nums text-foreground">{followers.toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card className={cardClass}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.rating")}</CardTitle>
-            <Star className="size-4 text-brand-star" />
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-2xl font-bold tabular-nums text-foreground">
-              {insights && insights.reviewCount > 0 ? rating.toFixed(1) : "—"}
-            </p>
-            {insights && insights.reviewCount > 0 ? (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {insights.reviewCount} {insights.reviewCount === 1 ? "review" : "reviews"}
+      <div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Performance</p>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <Card className={cardClass}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.products")}</CardTitle>
+              <Package className="size-4 shrink-0 text-brand-primary" aria-hidden />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-2xl font-bold tabular-nums text-foreground">{totalProducts}</p>
+            </CardContent>
+          </Card>
+          <Card className={cardClass}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.orders")}</CardTitle>
+              <ShoppingCart className="size-4 shrink-0 text-brand-secondary" aria-hidden />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-2xl font-bold tabular-nums text-foreground">{totalOrders}</p>
+            </CardContent>
+          </Card>
+          <Card className={cardClass}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.views")}</CardTitle>
+              <Eye className="size-4 shrink-0 text-cyan-500" aria-hidden />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-2xl font-bold tabular-nums text-foreground">{views.toLocaleString()}</p>
+            </CardContent>
+          </Card>
+          <Card className={cardClass}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.rating")}</CardTitle>
+              <Star className="size-4 shrink-0 text-brand-star" aria-hidden />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-2xl font-bold tabular-nums text-foreground">
+                {insights && insights.reviewCount > 0 ? rating.toFixed(1) : "—"}
               </p>
-            ) : (
-              <p className="mt-1 text-xs text-muted-foreground">No reviews yet</p>
-            )}
-          </CardContent>
-        </Card>
+              {insights && insights.reviewCount > 0 ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {insights.reviewCount} {insights.reviewCount === 1 ? "review" : "reviews"}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-muted-foreground">No reviews yet</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Revenue & audience</p>
+        <div className="grid grid-cols-2 gap-4 md:max-w-xl md:grid-cols-2">
+          <Card className={cardClass}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.earnings")}</CardTitle>
+              <DollarSign className="size-4 shrink-0 text-brand-accent" aria-hidden />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-2xl font-bold tabular-nums text-foreground">${earnings.toFixed(0)}</p>
+            </CardContent>
+          </Card>
+          <Card className={cardClass}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t("vendor.stats.followers")}</CardTitle>
+              <Heart className="size-4 shrink-0 text-red-500" aria-hidden />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <p className="text-2xl font-bold tabular-nums text-foreground">{followers.toLocaleString()}</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {insights && insights.feedback.length > 0 ? (
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+        <section
+          className={cn(
+            "rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow duration-300",
+            "hover:shadow-lg dark:border-slate-800",
+          )}
+        >
           <h2 className="text-lg font-semibold text-foreground">Customer feedback</h2>
           <p className="mt-1 text-sm text-muted-foreground">Recent preset feedback from completed orders.</p>
           <ul className="mt-4 space-y-4">

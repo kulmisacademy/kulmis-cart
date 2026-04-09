@@ -15,6 +15,8 @@ import { getVendorSessionCookieName } from "@/lib/vendor-session";
 const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+  /** Required when `ADMIN_ACCESS_KEY` is set in the environment. */
+  accessKey: z.string().optional(),
 });
 
 const SESSION_SEC = 60 * 60 * 24 * 7;
@@ -32,7 +34,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
   }
 
-  const { email, password } = parsed.data;
+  const { email, password, accessKey } = parsed.data;
+
+  const expectedAccess = process.env.ADMIN_ACCESS_KEY?.trim();
+  if (expectedAccess) {
+    if (!accessKey || accessKey.trim() !== expectedAccess) {
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+  }
+
   const admin = await findAdminByEmail(email);
   if (!admin) {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });

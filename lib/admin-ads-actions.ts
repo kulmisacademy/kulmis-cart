@@ -69,7 +69,7 @@ export async function refreshAdminAdsListAction(): Promise<
   { ok: true; ads: AdminAdListItem[] } | { ok: false; error: string }
 > {
   if (!(await requireAdminSession())) {
-    return { ok: false, error: "Unauthorized — sign in at /admin/login" };
+    return { ok: false, error: "Unauthorized — sign in to the admin portal" };
   }
   try {
     const ads = await listPayload();
@@ -107,7 +107,7 @@ export async function createAdminAdAction(
   raw: z.infer<typeof createSchema>,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!(await requireAdminSession())) {
-    return { ok: false, error: "Unauthorized — sign in at /admin/login" };
+    return { ok: false, error: "Unauthorized — sign in to the admin portal" };
   }
   const parsed = createSchema.safeParse(raw);
   if (!parsed.success) {
@@ -161,7 +161,7 @@ export async function updateAdminAdAction(
   raw: z.infer<typeof patchSchema>,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!(await requireAdminSession())) {
-    return { ok: false, error: "Unauthorized — sign in at /admin/login" };
+    return { ok: false, error: "Unauthorized — sign in to the admin portal" };
   }
   const parsed = patchSchema.safeParse(raw);
   if (!parsed.success) {
@@ -205,7 +205,7 @@ export async function updateAdminAdAction(
 
 export async function deleteAdminAdAction(id: string): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!(await requireAdminSession())) {
-    return { ok: false, error: "Unauthorized — sign in at /admin/login" };
+    return { ok: false, error: "Unauthorized — sign in to the admin portal" };
   }
   try {
     const ok = await deleteAd(id);
@@ -240,7 +240,7 @@ export async function uploadAdminAdImageAction(
   formData: FormData,
 ): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
   if (!(await requireAdminSession())) {
-    return { ok: false, error: "Unauthorized — sign in at /admin/login" };
+    return { ok: false, error: "Unauthorized — sign in to the admin portal" };
   }
 
   const fileEntry = formData.get("file");

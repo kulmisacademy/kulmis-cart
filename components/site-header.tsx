@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChangeEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, ShoppingCart, User } from "lucide-react";
@@ -11,6 +12,7 @@ import { useCart } from "@/lib/cart-context";
 import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { authUrl } from "@/lib/auth-routes";
 import { useTranslations } from "@/lib/locale-context";
+import { useOptionalStoreInventorySearch } from "@/components/store-inventory-search-context";
 
 const navKeys = [
   { href: "/", key: "nav.home" as const },
@@ -36,6 +38,14 @@ export function SiteHeader() {
     pathname.startsWith("/customer/login") ||
     pathname.startsWith("/customer/register");
   const searchPlaceholder = isStoreDetail ? t("nav.searchPlaceholderStore") : t("nav.searchPlaceholder");
+  const storeInventorySearch = useOptionalStoreInventorySearch();
+  const headerInventorySearchProps =
+    storeInventorySearch != null
+      ? {
+          value: storeInventorySearch.search,
+          onChange: (e: ChangeEvent<HTMLInputElement>) => storeInventorySearch.setSearch(e.target.value),
+        }
+      : {};
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur transition-colors dark:bg-slate-950/95">
@@ -88,8 +98,11 @@ export function SiteHeader() {
                 <Search size={16} className="mr-2 shrink-0 text-muted-foreground" aria-hidden />
                 <input
                   suppressHydrationWarning
+                  type="search"
                   className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                   placeholder={searchPlaceholder}
+                  aria-label={searchPlaceholder}
+                  {...headerInventorySearchProps}
                 />
               </div>
             ) : null}
@@ -140,6 +153,7 @@ export function SiteHeader() {
                 className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
+                {...headerInventorySearchProps}
               />
             </div>
             {isStoreDetail ? (

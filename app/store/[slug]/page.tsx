@@ -7,6 +7,7 @@ import { PageScaffold } from "@/components/page-scaffold";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StoreFollowButton } from "@/components/store-follow-button";
+import { StoreInventorySearchProvider } from "@/components/store-inventory-search-context";
 import { StoreProductBrowser } from "@/components/store-product-browser";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatFollowerCount } from "@/lib/format-followers";
@@ -75,9 +76,10 @@ export default async function StoreProfilePage({ params }: StoreDetailProps) {
   const trustCount = liveSummary ? liveSummary.count : store.totalReviews;
 
   return (
-    <PageScaffold>
-      <SiteHeader />
-      <main>
+    <StoreInventorySearchProvider>
+      <PageScaffold>
+        <SiteHeader />
+        <main>
         <section className="relative">
           <div className="relative h-48 w-full overflow-hidden sm:h-56 md:h-64">
             <Image
@@ -217,7 +219,8 @@ export default async function StoreProfilePage({ params }: StoreDetailProps) {
           </div>
         </div>
       </main>
-      <SiteFooter />
-    </PageScaffold>
+        <SiteFooter />
+      </PageScaffold>
+    </StoreInventorySearchProvider>
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import type { Product } from "@/lib/data";
 import { ProductCard } from "@/components/product-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useOptionalStoreInventorySearch } from "@/components/store-inventory-search-context";
 import { Search } from "lucide-react";
 
 type SortKey = "newest" | "oldest" | "price-asc" | "price-desc";
@@ -14,12 +15,14 @@ type Props = {
 };
 
 export function StoreProductBrowser({ products, phone }: Props) {
-  const [search, setSearch] = useState("");
+  const inventorySearch = useOptionalStoreInventorySearch();
+  const [localSearch, setLocalSearch] = useState("");
+  const search = inventorySearch?.search ?? localSearch;
+  const setSearch = inventorySearch?.setSearch ?? setLocalSearch;
   const [category, setCategory] = useState<string>("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
-  const [isPending, startTransition] = useTransition();
 
   const categories = useMemo(() => {
     const set = new Set(products.map((p) => p.category));
@@ -65,10 +68,6 @@ export function StoreProductBrowser({ products, phone }: Props) {
     return list;
   }, [products, search, category, minPrice, maxPrice, sort]);
 
-  function onSearchChange(v: string) {
-    startTransition(() => setSearch(v));
-  }
-
   return (
     <section id="inventory" className="scroll-mt-24">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -87,7 +86,7 @@ export function StoreProductBrowser({ products, phone }: Props) {
               suppressHydrationWarning
               type="search"
               value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products by name or description…"
               className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-brand-primary/30 dark:focus-visible:ring-brand-primary/40"
               aria-label="Search products"
@@ -154,9 +153,7 @@ export function StoreProductBrowser({ products, phone }: Props) {
         </CardContent>
       </Card>
 
-      <div
-        className={`grid grid-cols-2 items-stretch gap-3 sm:gap-4 md:gap-6 lg:grid-cols-3 [&>article]:min-h-0 ${isPending ? "opacity-70" : "opacity-100"} transition-opacity duration-200`}
-      >
+      <div className="grid grid-cols-2 items-stretch gap-3 sm:gap-4 md:gap-6 lg:grid-cols-3 [&>article]:min-h-0">
         {filtered.map((product) => (
           <ProductCard key={product.id} product={product} phone={phone} />
         ))}

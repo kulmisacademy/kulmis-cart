@@ -276,5 +276,33 @@
     "light": "Light",
     "dark": "Dark",
     "toggle": "Toggle theme"
+  },
+  "store": {
+    "inventory": {
+      "searchPlaceholder": "Search products…",
+      "filters": "Filters",
+      "quickFilters": "Quick filters",
+      "clearAll": "CLEAR ALL",
+      "clearAllShort": "Clear all",
+      "done": "Done",
+      "closeFilters": "Close filters",
+      "allItems": "All items",
+      "category": "CATEGORY",
+      "priceRange": "PRICE RANGE",
+      "minPrice": "Min price",
+      "maxPrice": "Max price",
+      "sort": "SORT",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first",
+      "sortPriceAsc": "Price: Low → High",
+      "sortPriceDesc": "Price: High → Low",
+      "showing": "Showing",
+      "of": "of",
+      "product": "product",
+      "products": "products",
+      "noMatch": "No products match these filters. Try adjusting category, price, search, or sort.",
+      "clearFilters": "Clear filters",
+      "emptyStore": "No products in this store yet."
+    }
   }
 }

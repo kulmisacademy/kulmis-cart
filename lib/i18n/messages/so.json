@@ -276,5 +276,33 @@
     "light": "Iftiin",
     "dark": "Madow",
     "toggle": "Beddel mawduuca"
+  },
+  "store": {
+    "inventory": {
+      "searchPlaceholder": "Raadi alaabta…",
+      "filters": "Shaandheeyayaasha",
+      "quickFilters": "Shaandheeyayaal degdeg ah",
+      "clearAll": "DHAMMAAN NADIIFI",
+      "clearAllShort": "Dhammaan nadiifi",
+      "done": "Diyaar",
+      "closeFilters": "Xidh shaandheeyayaasha",
+      "allItems": "Alaabta oo dhan",
+      "category": "QAYBTA",
+      "priceRange": "QIIME KALA DUWAN",
+      "minPrice": "Qiime ugu yar",
+      "maxPrice": "Qiime ugu badan",
+      "sort": "KALA SOOC",
+      "sortNewest": "Ugu cusub marka hore",
+      "sortOldest": "Ugu horeeya marka hore",
+      "sortPriceAsc": "Qiime: Hoose → Sare",
+      "sortPriceDesc": "Qiime: Sare → Hoose",
+      "showing": "Waxaa la muujinayaa",
+      "of": "ka mid ah",
+      "product": "alaab",
+      "products": "alaab",
+      "noMatch": "Alaab lama helin. Isku day inaad beddesho qaybta, qiimaha, raadinta, ama kala soocidda.",
+      "clearFilters": "Nadiifi shaandheeyayaasha",
+      "emptyStore": "Dukaankan weli ma jiro alaab."
+    }
   }
 }

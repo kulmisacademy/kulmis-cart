@@ -276,5 +276,33 @@
     "light": "فاتح",
     "dark": "داكن",
     "toggle": "تبديل المظهر"
+  },
+  "store": {
+    "inventory": {
+      "searchPlaceholder": "ابحث عن المنتجات…",
+      "filters": "عوامل التصفية",
+      "quickFilters": "تصفية سريعة",
+      "clearAll": "مسح الكل",
+      "clearAllShort": "مسح الكل",
+      "done": "تم",
+      "closeFilters": "إغلاق عوامل التصفية",
+      "allItems": "جميع العناصر",
+      "category": "الفئة",
+      "priceRange": "نطاق السعر",
+      "minPrice": "الحد الأدنى للسعر",
+      "maxPrice": "الحد الأقصى للسعر",
+      "sort": "الترتيب",
+      "sortNewest": "الأحدث أولاً",
+      "sortOldest": "الأقدم أولاً",
+      "sortPriceAsc": "السعر: من الأقل للأعلى",
+      "sortPriceDesc": "السعر: من الأعلى للأقل",
+      "showing": "عرض",
+      "of": "من",
+      "product": "منتج",
+      "products": "منتجات",
+      "noMatch": "لا توجد منتجات مطابقة. جرّب تعديل الفئة أو السعر أو البحث أو الترتيب.",
+      "clearFilters": "مسح عوامل التصفية",
+      "emptyStore": "لا توجد منتجات في هذا المتجر بعد."
+    }
   }
 }

@@ -4,5 +4,11 @@
     "email": "admin@kulmiscart.com",
     "passwordHash": "$2b$10$Jhhrxkc8M3x/DyHuY0vJbek/2QDRliLRvg3dTPVjfczp2ngfP8zJm",
     "createdAt": "2026-03-29T00:00:00.000Z"
+  },
+  {
+    "id": "admin-2",
+    "email": "engapdirahmaan152@gmail.com",
+    "passwordHash": "$2b$10$YWJhFoXNPYTatNroONUCueDmMZ7UOuStqmtL.cQhh5bkftGhSN/s.",
+    "createdAt": "2026-04-09T00:00:00.000Z"
   }
 ]

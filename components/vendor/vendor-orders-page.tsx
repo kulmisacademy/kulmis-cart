@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
+import { apiFetch, apiUrl } from "@/lib/api-client";
 
 type ApiLine = {
   id: string;
@@ -67,7 +68,7 @@ export function VendorOrdersPage() {
 
   const load = useCallback(async () => {
     setError(null);
-    const res = await fetch("/api/vendor/store-orders", { credentials: "include" });
+    const res = await apiFetch("/api/vendor/store-orders");
     const data = (await res.json()) as { orders?: ApiLine[]; error?: string };
     if (!res.ok) {
       setError(data.error ?? "Could not load orders");
@@ -84,9 +85,8 @@ export function VendorOrdersPage() {
   async function updateStatus(orderLineId: string, status: ApiLine["status"]) {
     setPatching(orderLineId);
     try {
-      const res = await fetch("/api/vendor/store-orders", {
+      const res = await apiFetch("/api/vendor/store-orders", {
         method: "PATCH",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderLineId, status }),
       });
@@ -104,9 +104,8 @@ export function VendorOrdersPage() {
   async function generateInvoice(orderLineId: string) {
     setPatching(orderLineId);
     try {
-      const res = await fetch("/api/vendor/invoices/generate", {
+      const res = await apiFetch("/api/vendor/invoices/generate", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderLineId }),
       });
@@ -228,7 +227,7 @@ export function VendorOrdersPage() {
                             <Button
                               type="button"
                               size="sm"
-                              className="rounded-xl bg-brand-secondary text-white hover:bg-brand-secondary/90"
+                              className="rounded-xl bg-brand-secondary text-black hover:bg-brand-secondary/90"
                               disabled={patching === o.id}
                               onClick={() => void updateStatus(o.id, "accepted")}
                             >
@@ -260,7 +259,7 @@ export function VendorOrdersPage() {
                           ) : null}
                           {invoiceByOrderId[o.id] ? (
                             <Button type="button" variant="secondary" size="sm" className="rounded-xl" asChild>
-                              <a href={`/api/vendor/invoices/${invoiceByOrderId[o.id]!.id}/pdf`} target="_blank" rel="noreferrer">
+                              <a href={apiUrl(`/api/vendor/invoices/${invoiceByOrderId[o.id]!.id}/pdf`)} target="_blank" rel="noreferrer">
                                 Download PDF
                               </a>
                             </Button>

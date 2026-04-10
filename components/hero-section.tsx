@@ -7,19 +7,18 @@ import { MessageCircle, Smartphone, Store } from "lucide-react";
 import { useTranslations } from "@/lib/locale-context";
 import { SOMALI_REGIONS } from "@/lib/somali-regions";
 
-/** KULMISCART hero art — filenames versioned so browsers/CDNs never show cached old slides. */
+/** LAAS24 hero art — `public/images/hero/laas24-hero-*.png` (H1–H10). */
 const HERO_SLIDES = [
-  "/images/hero/kulmis-hero-01.png",
-  "/images/hero/kulmis-hero-02.png",
-  "/images/hero/kulmis-hero-03.png",
-  "/images/hero/kulmis-hero-04.png",
-  "/images/hero/kulmis-hero-05.png",
-  "/images/hero/kulmis-hero-06.png",
-  "/images/hero/kulmis-hero-07.png",
-  "/images/hero/kulmis-hero-08.png",
-  "/images/hero/kulmis-hero-09.png",
-  "/images/hero/kulmis-hero-10.png",
-  "/images/hero/kulmis-hero-11.png",
+  "/images/hero/laas24-hero-01.png",
+  "/images/hero/laas24-hero-02.png",
+  "/images/hero/laas24-hero-03.png",
+  "/images/hero/laas24-hero-04.png",
+  "/images/hero/laas24-hero-05.png",
+  "/images/hero/laas24-hero-06.png",
+  "/images/hero/laas24-hero-07.png",
+  "/images/hero/laas24-hero-08.png",
+  "/images/hero/laas24-hero-09.png",
+  "/images/hero/laas24-hero-10.png",
 ] as const;
 
 const SLIDE_INTERVAL_MS = 4500;

@@ -82,17 +82,20 @@ export default async function StoreProfilePage({ params }: StoreDetailProps) {
         <main>
         <section className="relative">
           <div className="relative mx-auto min-w-0 max-w-brand">
-            <div className="relative h-48 w-full overflow-hidden sm:h-56 md:h-64">
-              <Image
-                src={banner}
-                alt=""
-                fill
-                className="object-cover blur-[2px] brightness-95"
-                sizes="100vw"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-slate-900/20 to-slate-900/20" />
-              <div className="absolute bottom-0 left-1/2 z-10 flex -translate-x-1/2 translate-y-1/2 sm:left-8 sm:translate-x-0">
+            {/* Logo overlaps the banner + content; keep it outside overflow-hidden or translate-y-1/2 clips the circle */}
+            <div className="relative">
+              <div className="relative h-48 w-full overflow-hidden sm:h-56 md:h-64">
+                <Image
+                  src={banner}
+                  alt=""
+                  fill
+                  className="object-cover blur-[2px] brightness-95"
+                  sizes="100vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-slate-900/20 to-slate-900/20" />
+              </div>
+              <div className="absolute bottom-0 left-1/2 z-20 flex -translate-x-1/2 translate-y-1/2 sm:left-8 sm:translate-x-0">
                 {store.logoUrl ? (
                   <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-background bg-background shadow-xl ring-2 ring-border/60 sm:h-28 sm:w-28">
                     <Image src={store.logoUrl} alt={store.name} fill className="object-cover" unoptimized sizes="112px" />

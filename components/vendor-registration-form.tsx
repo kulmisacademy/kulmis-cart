@@ -12,6 +12,7 @@ import { Select } from "@/components/ui/select";
 import { SOMALI_REGIONS } from "@/lib/somali-regions";
 import { vendorRegistrationSchema, type VendorRegistrationFormValues } from "@/lib/vendor-registration-schema";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 const STEP1_FIELDS = [
   "storeName",
@@ -107,7 +108,7 @@ export function VendorRegistrationForm({
         fd.append("banner", values.banner);
       }
 
-      const res = await fetch("/api/vendor/register", { method: "POST", body: fd });
+      const res = await apiFetch("/api/vendor/register", { method: "POST", body: fd });
       const data = (await res.json()) as {
         ok?: boolean;
         message?: string;

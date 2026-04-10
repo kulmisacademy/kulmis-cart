@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { toast } from "@/lib/toast";
+import { apiFetch } from "@/lib/api-client";
 
 /**
  * Opens WhatsApp with a tracked order after ensuring the shopper is registered.
@@ -19,9 +20,8 @@ export function useCustomerOrderWhatsApp(nextPath: string) {
       router.push(`/auth?tab=customer&mode=register&next=${encodeURIComponent(next)}`);
       return;
     }
-    const res = await fetch("/api/customer/orders", {
+    const res = await apiFetch("/api/customer/orders", {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId }),
     });

@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useCart } from "@/lib/cart-context";
 import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { deferRouterAction } from "@/lib/next-router-safe";
+import { apiFetch } from "@/lib/api-client";
 
 export function CheckoutClient() {
   const router = useRouter();
@@ -57,9 +58,8 @@ export function CheckoutClient() {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("/api/customer/checkout", {
+      const res = await apiFetch("/api/customer/checkout", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fullName: fullName.trim(),

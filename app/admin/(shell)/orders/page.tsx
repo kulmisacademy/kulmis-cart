@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { apiFetch } from "@/lib/api-client";
 
 type Row = {
   checkoutId: string | null;
@@ -27,7 +28,7 @@ export default function AdminOrdersPage() {
     setError(null);
     const q = new URLSearchParams();
     if (phoneSearch.trim()) q.set("phone", phoneSearch.trim());
-    const res = await fetch(`/api/admin/orders?${q.toString()}`, { credentials: "include" });
+    const res = await apiFetch(`/api/admin/orders?${q.toString()}`);
     const data = (await res.json()) as { orders?: Row[]; error?: string };
     if (!res.ok) {
       setError(data.error ?? "Failed to load");

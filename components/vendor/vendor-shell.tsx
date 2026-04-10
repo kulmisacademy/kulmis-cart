@@ -16,6 +16,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
+import { apiFetch } from "@/lib/api-client";
 
 const NAV_KEYS = [
   { href: "/vendor", key: "overview", icon: LayoutDashboard },
@@ -45,7 +46,7 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
     .toUpperCase();
 
   async function logout() {
-    await fetch("/api/vendor/logout", { method: "POST" });
+    await apiFetch("/api/vendor/logout", { method: "POST" });
     router.push("/");
   }
 

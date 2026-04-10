@@ -7,6 +7,23 @@ import { getCustomerSessionCookieName, verifyCustomerSession } from "@/lib/custo
 import { getVendorSessionCookieName, verifyVendorSession } from "@/lib/vendor-session";
 
 export async function GET(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const url = new URL(request.url);
+      const q = url.searchParams.toString();
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/chat/socket-token${q ? `?${q}` : ""}`, {
+        headers: { cookie: request.headers.get("cookie") ?? "" },
+      });
+      if (r.ok) {
+        const body = await r.json();
+        return NextResponse.json(body);
+      }
+    } catch (e) {
+      console.error("[chat/socket-token] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const threadId = searchParams.get("threadId")?.trim() ?? "";

@@ -53,7 +53,7 @@ export function SiteHeader() {
         {/* One bar: logo gets flexible space + truncation; controls never shrink into it */}
         <div className="flex items-center gap-1.5 py-2 sm:gap-2 sm:py-3 md:gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden sm:gap-2 md:flex-none md:overflow-visible">
-            <BrandLogo href="/" size="md" className="min-w-0 max-md:max-w-[min(100%,11rem)]" />
+            <BrandLogo markId="logo" href="/" size="md" className="min-w-0 max-md:max-w-[min(100%,11rem)]" />
             <Link
               href={authUrl({ tab: "store", mode: "register" })}
               className="hidden shrink-0 whitespace-nowrap rounded-md px-1.5 py-1 text-[10px] font-bold text-brand-primary underline-offset-2 hover:underline sm:inline-flex sm:px-2 sm:text-[11px] md:hidden"
@@ -116,7 +116,7 @@ export function SiteHeader() {
               </Link>
             ) : null}
 
-            <LanguageSwitcher selectId="kulmiscart-locale" variant="compact" />
+            <LanguageSwitcher selectId="laas24-locale" variant="compact" />
             <ThemeToggle />
 
             {customer != null ? <NotificationBell forRole="customer" /> : null}

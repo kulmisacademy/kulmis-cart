@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
 import { VendorUpgradeRequestModal } from "./vendor-upgrade-request-modal";
+import { apiFetch } from "@/lib/api-client";
 
 function UsageRow({
   label,
@@ -73,7 +74,7 @@ export function VendorSubscriptionPage() {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/vendor/plans");
+        const res = await apiFetch("/api/vendor/plans");
         const data = (await res.json()) as { plans?: PlanDefinitionRow[] };
         if (!cancelled && data.plans) setPlans(data.plans);
       } catch {
@@ -91,7 +92,7 @@ export function VendorSubscriptionPage() {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/vendor/usage");
+        const res = await apiFetch("/api/vendor/usage");
         const data = (await res.json()) as UsagePayload & { error?: string };
         if (!cancelled && !data.error) setUsage(data);
       } catch {
@@ -240,7 +241,7 @@ export function VendorSubscriptionPage() {
           void refreshDashboard();
           void (async () => {
             try {
-              const uRes = await fetch("/api/vendor/usage");
+              const uRes = await apiFetch("/api/vendor/usage");
               const u = (await uRes.json()) as UsagePayload & { error?: string };
               if (uRes.ok && !u.error) setUsage(u);
             } catch {

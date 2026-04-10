@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { customerPostLoginPath } from "@/lib/internal-nav";
+import { apiFetch } from "@/lib/api-client";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -36,10 +37,9 @@ export function CustomerLoginForm({ nextPath, embedded, onSwitchToRegister }: Pr
       password: values.password,
     };
     try {
-      const res = await fetch("/api/customer/login", {
+      const res = await apiFetch("/api/customer/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(payload),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };

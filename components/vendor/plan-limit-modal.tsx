@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { PlanDefinitionRow } from "@/lib/platform-db";
+import { apiFetch } from "@/lib/api-client";
 
 export type PlanLimitKind = "product" | "video" | "ai";
 
@@ -43,7 +44,7 @@ export function PlanLimitModal({ open, kind, onClose, storeName, phone, email }:
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/vendor/plans");
+        const res = await apiFetch("/api/vendor/plans");
         const data = (await res.json()) as { plans?: PlanDefinitionRow[] };
         const list = (data.plans ?? []).filter((p) => p.slug !== "free");
         if (!cancelled) {
@@ -82,7 +83,7 @@ export function PlanLimitModal({ open, kind, onClose, storeName, phone, email }:
     if (!digits) return null;
     const planName = plans.find((p) => p.id === planId)?.name ?? "—";
     const msg = [
-      "Upgrade request (KulmisCart)",
+      "Upgrade request (LAAS24)",
       `Store: ${storeName}`,
       `Email: ${email}`,
       `Phone: ${phone}`,
@@ -99,7 +100,7 @@ export function PlanLimitModal({ open, kind, onClose, storeName, phone, email }:
     setSubmitError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("/api/vendor/upgrade-request", {
+      const res = await apiFetch("/api/vendor/upgrade-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId, message: message.trim() || undefined }),

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
+import { apiFetch } from "@/lib/api-client";
 
 export function VendorMessagesPage() {
   const { t } = useTranslations();
@@ -29,7 +30,7 @@ export function VendorMessagesPage() {
 
   useEffect(() => {
     void (async () => {
-      const res = await fetch("/api/chat/threads?role=vendor", { credentials: "include" });
+      const res = await apiFetch("/api/chat/threads?role=vendor");
       const data = (await res.json().catch(() => ({}))) as {
         threads?: Array<{
           id: string;

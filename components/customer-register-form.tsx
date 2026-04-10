@@ -12,6 +12,7 @@ import { customerRegisterSchema, type CustomerRegisterInput } from "@/lib/custom
 import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { customerPostLoginPath } from "@/lib/internal-nav";
 import { SOMALI_REGIONS } from "@/lib/somali-regions";
+import { apiFetch } from "@/lib/api-client";
 
 const touchInput =
   "h-12 rounded-lg px-3 py-3 text-base sm:h-11 sm:rounded-xl sm:px-3.5 sm:py-2 sm:text-sm";
@@ -40,10 +41,9 @@ export function CustomerRegisterForm({ nextPath, embedded, onSwitchToLogin }: Pr
 
   async function onSubmit(values: CustomerRegisterInput) {
     form.clearErrors("root");
-    const res = await fetch("/api/customer/register", {
+    const res = await apiFetch("/api/customer/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify(values),
     });
     const data = (await res.json().catch(() => ({}))) as { error?: string };
@@ -52,7 +52,7 @@ export function CustomerRegisterForm({ nextPath, embedded, onSwitchToLogin }: Pr
         message:
           data.error ??
           (res.status === 404
-            ? "Server API not found. Run npm run dev from the kulmiscart app folder (or from the repo root)."
+            ? "Server API not found. Run npm run dev from the somcart app folder (or from the repo root)."
             : "Registration failed"),
       });
       return;

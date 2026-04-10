@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { PlanDefinitionRow } from "@/lib/platform-db";
+import { apiFetch } from "@/lib/api-client";
 
 function waDigits(): string {
   const raw = process.env.NEXT_PUBLIC_UPGRADE_WHATSAPP?.trim() ?? "";
@@ -64,7 +65,7 @@ export function VendorUpgradeRequestModal({
     if (!digits) return null;
     const planName = plans.find((p) => p.id === planId)?.name ?? "—";
     const msg = [
-      "Upgrade request (KulmisCart)",
+      "Upgrade request (LAAS24)",
       `Store: ${storeName}`,
       `Email: ${email}`,
       `Phone: ${phone}`,
@@ -80,7 +81,7 @@ export function VendorUpgradeRequestModal({
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("/api/vendor/upgrade-request", {
+      const res = await apiFetch("/api/vendor/upgrade-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId, message: message.trim() || undefined }),

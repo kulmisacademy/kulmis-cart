@@ -26,7 +26,7 @@ export type LanguageSwitcherProps = {
 };
 
 export function LanguageSwitcher({
-  selectId = "kulmiscart-locale",
+  selectId = "laas24-locale",
   variant = "compact",
   className,
 }: LanguageSwitcherProps) {

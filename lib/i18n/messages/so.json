@@ -1,6 +1,6 @@
 {
   "common": {
-    "brand": "KULMISCART"
+    "brand": "LAAS24"
   },
   "nav": {
     "home": "Bogga hore",
@@ -30,7 +30,7 @@
     "title1": "Dhis dukaankaaga.",
     "title2": "Iibso meel kasta",
     "title3": "Soomaaliya.",
-    "subtitle": "KULMISCART waa hab fudud oo aad ku furto dukaanka internetka, wadaagto xiriirkaaga, oo si degdeg ah u hesho dalabyada.",
+    "subtitle": "LAAS24 waa hab fudud oo aad ku furto dukaanka internetka, wadaagto xiriirkaaga, oo si degdeg ah u hesho dalabyada.",
     "ctaPrimary": "Bilow iibinta",
     "ctaSecondary": "Eeg alaabta",
     "trust1": "Daqiiqado gudahood furitaan",
@@ -83,7 +83,7 @@
   "testimonials": {
     "eyebrow": "Bulshada",
     "title": "Waxaa jecel ganacsatada & iibsadayaasha",
-    "subtitle": "Jawaab celin dhab ah oo ka timid dadka isticmaala KULMISCART."
+    "subtitle": "Jawaab celin dhab ah oo ka timid dadka isticmaala LAAS24."
   },
   "topStores": {
     "eyebrow": "Suuqa",
@@ -101,7 +101,7 @@
     "step5": "Hel dalabyada WhatsApp"
   },
   "footer": {
-    "tagline": "© 2024 KULMISCART. Wakiilka iftiinka ganacsiga Soomaalida.",
+    "tagline": "© 2024 LAAS24. Wakiilka iftiinka ganacsiga Soomaalida.",
     "shop": "Iibsiga",
     "products": "Alaabta",
     "stores": "Dukaamada",
@@ -212,7 +212,7 @@
       "customer": "Macmiil",
       "total": "Wadarta",
       "whatsapp": "WhatsApp",
-      "message": "Salaan, dalabkaaga KULMISCART."
+      "message": "Salaan, dalabkaaga LAAS24."
     },
     "messages": {
       "title": "Farriimaha",

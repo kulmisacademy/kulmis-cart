@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import { Paperclip, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 type Message = {
   id: string;
@@ -78,7 +79,7 @@ async function fetchCreateThread(storeSlug: string): Promise<ThreadOpenResult> {
   const existing = threadOpenByStoreSlug.get(storeSlug);
   if (existing) return existing;
   const p = (async (): Promise<ThreadOpenResult> => {
-    const t = await fetch("/api/chat/thread", {
+    const t = await apiFetch("/api/chat/thread", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ storeSlug }),
@@ -128,8 +129,7 @@ async function fetchThreadMessages(
 
   const p = (async () => {
     try {
-      const res = await fetch(`/api/chat/messages?threadId=${encodeURIComponent(threadId)}`, {
-        credentials: "include",
+      const res = await apiFetch(`/api/chat/messages?threadId=${encodeURIComponent(threadId)}`, {
         cache: "no-store",
       });
       const data = (await res.json()) as { messages?: Message[]; error?: string };
@@ -280,9 +280,8 @@ export function ChatRoom({
             void (async () => {
               let tok: string | undefined;
               try {
-                const tr = await fetch(
+                const tr = await apiFetch(
                   `/api/chat/socket-token?threadId=${encodeURIComponent(tidSocket)}`,
-                  { credentials: "include" },
                 );
                 if (tr.ok) {
                   const td = (await tr.json()) as { token?: string };
@@ -347,10 +346,9 @@ export function ChatRoom({
     setSendError(null);
     setText("");
     try {
-      const res = await fetch("/api/chat/messages", {
+      const res = await apiFetch("/api/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ threadId, messageType: "text", messageText: val, contextRole: viewerRole }),
       });
       const data = (await res.json().catch(() => ({}))) as { message?: Message; error?: string };
@@ -375,10 +373,9 @@ export function ChatRoom({
     setSendBusy(true);
     setSendError(null);
     try {
-      const res = await fetch("/api/chat/messages", {
+      const res = await apiFetch("/api/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({
           threadId,
           messageType: "product",

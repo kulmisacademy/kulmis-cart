@@ -291,7 +291,7 @@ export function ProductsMarketplaceClient({ products, stores }: Props) {
                       className={cn(
                         "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                         active
-                          ? "bg-brand-secondary text-white shadow-sm dark:bg-brand-secondary/90"
+                          ? "bg-brand-secondary text-black shadow-sm dark:bg-brand-secondary/90"
                           : "bg-muted text-muted-foreground hover:bg-muted/80 dark:bg-slate-800",
                       )}
                     >

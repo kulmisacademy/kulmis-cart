@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { UpgradeRequestRow } from "@/lib/platform-db";
+import { apiFetch } from "@/lib/api-client";
 
 export function AdminUpgradeRequestsClient() {
   const [requests, setRequests] = useState<UpgradeRequestRow[]>([]);
@@ -14,7 +15,7 @@ export function AdminUpgradeRequestsClient() {
   async function load() {
     setMessage(null);
     try {
-      const res = await fetch("/api/admin/upgrade-requests", { credentials: "include" });
+      const res = await apiFetch("/api/admin/upgrade-requests");
       const data = (await res.json()) as { requests?: UpgradeRequestRow[]; error?: string };
       if (!res.ok) {
         setMessage(data.error ?? "Failed to load.");
@@ -36,9 +37,8 @@ export function AdminUpgradeRequestsClient() {
     setActing(requestId);
     setMessage(null);
     try {
-      const res = await fetch("/api/admin/upgrade-requests", {
+      const res = await apiFetch("/api/admin/upgrade-requests", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ requestId, action }),
       });

@@ -5,6 +5,7 @@ import { deferRouterAction } from "@/lib/next-router-safe";
 import { useEffect, useState } from "react";
 import { formatFollowerCount } from "@/lib/format-followers";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 type Props = {
   storeSlug: string;
@@ -26,9 +27,8 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `/api/customer/follow-status?storeSlug=${encodeURIComponent(storeSlug)}`,
-          { credentials: "include" },
         );
         if (!res.ok || cancelled) return;
         const data = (await res.json()) as {
@@ -57,9 +57,8 @@ export function StoreFollowButton({ storeSlug, storeProfilePath, initialFollower
     setActionError(null);
     setBusy(true);
     try {
-      const res = await fetch("/api/customer/follow", {
+      const res = await apiFetch("/api/customer/follow", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ storeSlug, follow: !following }),
       });

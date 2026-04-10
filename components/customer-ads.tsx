@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ImageIcon, X } from "lucide-react";
 import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 type EligibleAd = {
   id: string;
@@ -45,8 +46,7 @@ function useEligibleAds(page: PageKey | null) {
     }
     let cancelled = false;
     void (async () => {
-      const res = await fetch(`/api/ads/eligible?page=${page}`, {
-        credentials: "include",
+      const res = await apiFetch(`/api/ads/eligible?page=${page}`, {
         cache: "no-store",
       });
       const data = (await res.json()) as { ads?: EligibleAd[] };
@@ -65,18 +65,16 @@ function recordViewOnce(page: PageKey, adId: string) {
   const key = viewSessionKey(page, adId);
   if (sessionStorage.getItem(key)) return;
   sessionStorage.setItem(key, "1");
-  void fetch("/api/ads/event", {
+  void apiFetch("/api/ads/event", {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ adId, type: "view" }),
   });
 }
 
 async function recordClick(adId: string) {
-  await fetch("/api/ads/event", {
+  await apiFetch("/api/ads/event", {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ adId, type: "click" }),
   });

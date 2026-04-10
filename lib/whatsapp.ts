@@ -27,7 +27,7 @@ export function createWhatsAppShareProductLink(product: Product, phone: string) 
 
 /** Quick hello to a store (e.g. from store card). */
 export function createWhatsAppStoreHelloLink(phone: string, storeName: string) {
-  const message = `Asc, waxaan ka helay KULMISCART — ${storeName}. Ma heli karaa macluumaad dheeraad ah?`;
+  const message = `Asc, waxaan ka helay LAAS24 — ${storeName}. Ma heli karaa macluumaad dheeraad ah?`;
   return `https://wa.me/${phone.replace(/\+/g, "")}?text=${encodeURIComponent(message)}`;
 }
 

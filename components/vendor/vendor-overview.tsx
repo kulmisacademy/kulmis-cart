@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "@/lib/locale-context";
 import { cn } from "@/lib/utils";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
+import { apiFetch } from "@/lib/api-client";
 
 type StoreInsights = {
   followers: number;
@@ -34,7 +35,7 @@ export function VendorOverview() {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/vendor/store-insights", { credentials: "include" });
+        const res = await apiFetch("/api/vendor/store-insights");
         if (!res.ok || cancelled) return;
         const data = (await res.json()) as StoreInsights;
         if (!cancelled) setInsights(data);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-client";
 
 export function VendorVerificationSettings() {
   const [feeCents, setFeeCents] = useState<number | null>(null);
@@ -13,7 +14,7 @@ export function VendorVerificationSettings() {
 
   async function load() {
     try {
-      const res = await fetch("/api/vendor/verification-request");
+      const res = await apiFetch("/api/vendor/verification-request");
       if (!res.ok) return;
       const data = (await res.json()) as { verificationFeeCents?: number; isVerified?: boolean };
       if (typeof data.verificationFeeCents === "number") setFeeCents(data.verificationFeeCents);
@@ -31,7 +32,7 @@ export function VendorVerificationSettings() {
     setSubmitting(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/vendor/verification-request", { method: "POST" });
+      const res = await apiFetch("/api/vendor/verification-request", { method: "POST" });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         setMessage(data.error ?? "Request failed.");

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { PlanDefinitionRow } from "@/lib/platform-db";
+import { apiFetch } from "@/lib/api-client";
 
 export function AdminPlatformClient() {
   const [feeDollars, setFeeDollars] = useState("10");
@@ -18,8 +19,8 @@ export function AdminPlatformClient() {
     setMessage(null);
     try {
       const [sRes, pRes] = await Promise.all([
-        fetch("/api/admin/platform-settings"),
-        fetch("/api/admin/plans"),
+        apiFetch("/api/admin/platform-settings"),
+        apiFetch("/api/admin/plans"),
       ]);
       if (sRes.ok) {
         const s = (await sRes.json()) as { settings?: { verification_fee_cents: number } };
@@ -49,9 +50,8 @@ export function AdminPlatformClient() {
     setSaving(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/admin/platform-settings", {
+      const res = await apiFetch("/api/admin/platform-settings", {
         method: "PATCH",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ verification_fee_cents: cents }),
       });
@@ -69,9 +69,8 @@ export function AdminPlatformClient() {
     setSaving(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/admin/plans", {
+      const res = await apiFetch("/api/admin/plans", {
         method: "PATCH",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId, ...patch }),
       });

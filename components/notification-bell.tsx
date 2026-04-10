@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import { cn } from "@/lib/utils";
 import type { AppNotificationAudience, InAppNotificationRow } from "@/lib/notifications/types";
+import { apiFetch } from "@/lib/api-client";
 
 type Props = {
   forRole: AppNotificationAudience;
@@ -23,7 +24,7 @@ export function NotificationBell({ forRole, className }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const refresh = useCallback(async () => {
-    const res = await fetch(`/api/notifications?${q(forRole)}`, { credentials: "include" });
+    const res = await apiFetch(`/api/notifications?${q(forRole)}`);
     if (!res.ok) return;
     const data = (await res.json()) as { notifications?: InAppNotificationRow[]; unreadCount?: number };
     setItems(data.notifications ?? []);
@@ -40,7 +41,7 @@ export function NotificationBell({ forRole, className }: Props) {
     let socket: Socket | null = null;
     let cancelled = false;
     void (async () => {
-      const tRes = await fetch(`/api/notifications/socket-token?${q(forRole)}`, { credentials: "include" });
+      const tRes = await apiFetch(`/api/notifications/socket-token?${q(forRole)}`);
       if (!tRes.ok || cancelled) return;
       const data = (await tRes.json()) as { token?: string };
       if (!data.token || cancelled) return;
@@ -68,9 +69,8 @@ export function NotificationBell({ forRole, className }: Props) {
   }, [open]);
 
   async function onMarkRead(id: string) {
-    await fetch(`/api/notifications?${q(forRole)}`, {
+    await apiFetch(`/api/notifications?${q(forRole)}`, {
       method: "PATCH",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
@@ -79,9 +79,8 @@ export function NotificationBell({ forRole, className }: Props) {
   }
 
   async function onMarkAll() {
-    await fetch(`/api/notifications?${q(forRole)}`, {
+    await apiFetch(`/api/notifications?${q(forRole)}`, {
       method: "PATCH",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ markAll: true as const }),
     });

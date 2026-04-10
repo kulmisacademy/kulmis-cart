@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/lib/locale-context";
 import { cn } from "@/lib/utils";
 
-const DISMISS_STORAGE_KEY = "kulmiscart-pwa-install-dismissed-at";
+const DISMISS_STORAGE_KEY = "laas24-pwa-install-dismissed-at";
 const DISMISS_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 interface BeforeInstallPromptEvent extends Event {

@@ -37,6 +37,26 @@ const postSchema = z.object({
 });
 
 export async function GET(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const url = new URL(request.url);
+      const q = url.searchParams.toString();
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/chat/messages${q ? `?${q}` : ""}`, {
+        headers: {
+          cookie: request.headers.get("cookie") ?? "",
+          referer: request.headers.get("referer") ?? "",
+        },
+      });
+      if (r.ok) {
+        const body = await r.json();
+        return NextResponse.json(body);
+      }
+    } catch (e) {
+      console.error("[chat/messages GET] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   try {
     const dbAvailable = Boolean(process.env.DATABASE_URL?.trim());
     const { searchParams } = new URL(request.url);
@@ -167,6 +187,25 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/chat/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": request.headers.get("content-type") ?? "application/json",
+          cookie: request.headers.get("cookie") ?? "",
+          referer: request.headers.get("referer") ?? "",
+        },
+        body: await request.clone().text(),
+      });
+      const data = await r.json().catch(() => ({}));
+      return NextResponse.json(data, { status: r.status });
+    } catch (e) {
+      console.error("[chat/messages POST] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   try {
     const dbAvailable = Boolean(process.env.DATABASE_URL?.trim());
     const cookieStore = await cookies();

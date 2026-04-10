@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Product } from "@/lib/data";
+import { apiFetch } from "@/lib/api-client";
 
 export type CartLine = {
   productId: string;
@@ -83,7 +84,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/marketplace/product-ids");
+        const res = await apiFetch("/api/marketplace/product-ids");
         if (!res.ok || cancelled) return;
         const data = (await res.json()) as { ids?: string[] };
         const valid = new Set(data.ids ?? []);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChatPopup } from "@/components/chat-popup";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-client";
 
 type Thread = {
   id: string;
@@ -19,7 +20,7 @@ export function CustomerMessagesSection() {
 
   useEffect(() => {
     void (async () => {
-      const res = await fetch("/api/chat/threads?role=customer", { credentials: "include" });
+      const res = await apiFetch("/api/chat/threads?role=customer");
       const data = (await res.json().catch(() => ({}))) as { threads?: Thread[] };
       if (res.ok && data.threads) setThreads(data.threads);
     })();

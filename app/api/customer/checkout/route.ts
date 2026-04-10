@@ -22,6 +22,24 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/customer/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": request.headers.get("content-type") ?? "application/json",
+          cookie: request.headers.get("cookie") ?? "",
+        },
+        body: await request.clone().text(),
+      });
+      const data = await r.json().catch(() => ({}));
+      return NextResponse.json(data, { status: r.status });
+    } catch (e) {
+      console.error("[customer/checkout] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   let json: unknown;
   try {
     json = await request.json();

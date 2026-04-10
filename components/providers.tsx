@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import NextTopLoader from "nextjs-toploader";
+import { ClientTopLoader } from "@/components/client-top-loader";
 import { AppToaster } from "@/components/app-toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CustomerAds } from "@/components/customer-ads";
@@ -23,14 +23,7 @@ export function Providers({
     <LocaleProvider initialLocale={initialLocale}>
       <CartProvider>
         <ThemeProvider>
-          <NextTopLoader
-            color="#22c55e"
-            height={3}
-            showSpinner={false}
-            crawlSpeed={200}
-            shadow="0 0 12px rgba(34, 197, 94, 0.45)"
-            zIndex={99999}
-          />
+          <ClientTopLoader />
           <CustomerProvider>
             {children}
             <AppToaster />

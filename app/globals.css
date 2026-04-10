@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* id="laas-colors" — LAAS24: primary green + secondary gold (see tailwind.config.ts) */
 /* Match next-themes: `dark:` applies when `.dark` is on <html>, not only OS preference */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -11,13 +12,13 @@
   --border: #e2e8f0;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --brand-primary: #2563eb;
-  --brand-secondary: #22c55e;
-  --brand-accent: #f97316;
+  --brand-primary: #16a34a;
+  --brand-secondary: #facc15;
+  --brand-accent: #16a34a;
   --brand-star: #facc15;
-  /* Wordmark: mint “SOM” + blue “CART” (light theme) */
-  --brand-logo-som: #0d9488;
-  --brand-logo-cart: #2563eb;
+  /* Wordmark lockup: green “LAAS” + gold “24” */
+  --brand-logo-som: #16a34a;
+  --brand-logo-cart: #facc15;
 }
 
 @theme inline {
@@ -28,9 +29,11 @@
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-brand-primary: #2563eb;
-  --color-brand-secondary: #22c55e;
-  --color-brand-accent: #f97316;
+  --color-primary: #16a34a;
+  --color-secondary: #facc15;
+  --color-brand-primary: #16a34a;
+  --color-brand-secondary: #facc15;
+  --color-brand-accent: #16a34a;
   --color-brand-star: #facc15;
   --color-brand-logo-som: var(--brand-logo-som);
   --color-brand-logo-cart: var(--brand-logo-cart);
@@ -47,9 +50,9 @@ html.dark {
   --border: #334155;
   --muted: #334155;
   --muted-foreground: #94a3b8;
-  /* Brighter mint + blue on dark backgrounds */
-  --brand-logo-som: #2dd4bf;
-  --brand-logo-cart: #60a5fa;
+  /* Brighter green + gold on dark backgrounds */
+  --brand-logo-som: #22c55e;
+  --brand-logo-cart: #fde047;
 }
 
 body {
@@ -85,15 +88,15 @@ input[type="reset"] {
   touch-action: manipulation;
 }
 
-/* Premium hero gradient (135° blue → green) */
+/* Premium hero gradient (135° green → gold) */
 .bg-hero-gradient {
-  background: linear-gradient(135deg, #2563eb, #22c55e);
+  background: linear-gradient(135deg, #16a34a, #ca8a04);
 }
 
-/* Primary CTA: orange accent + smooth interaction */
+/* Primary CTA: brand green + smooth interaction */
 .btn-brand-accent {
   @apply inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand-accent px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 ease-in-out sm:w-auto;
-  box-shadow: 0 4px 14px -3px rgba(249, 115, 22, 0.45);
+  box-shadow: 0 4px 14px -3px rgba(22, 163, 74, 0.45);
 }
 .btn-brand-accent:hover {
   @apply scale-105 shadow-xl;

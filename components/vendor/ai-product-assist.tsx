@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-client";
 
 type Draft = { title: string; description: string; features: string };
 
@@ -27,7 +28,7 @@ export function AiProductAssist({ onApply, disabled, onPlanLimit }: Props) {
     try {
       const fd = new FormData();
       fd.set("image", file);
-      const res = await fetch("/api/ai/analyze-product-image", { method: "POST", body: fd });
+      const res = await apiFetch("/api/ai/analyze-product-image", { method: "POST", body: fd });
       const data = (await res.json()) as {
         title?: string;
         description?: string;

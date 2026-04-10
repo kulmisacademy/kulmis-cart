@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Eye, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-client";
 
 type StoreRow = {
   storeSlug: string;
@@ -20,7 +21,7 @@ export function AdminStoresClient() {
 
   async function load() {
     try {
-      const sRes = await fetch("/api/admin/stores");
+      const sRes = await apiFetch("/api/admin/stores");
       if (sRes.ok) {
         const d = (await sRes.json()) as { stores?: StoreRow[] };
         if (d.stores) setStores(d.stores);

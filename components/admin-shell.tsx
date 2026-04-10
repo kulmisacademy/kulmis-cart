@@ -18,6 +18,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { NotificationBell } from "@/components/notification-bell";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { getAdminLoginUrlPublic } from "@/lib/admin-login-public";
+import { apiFetch } from "@/lib/api-client";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -36,7 +37,7 @@ export function AdminShell({ email, children }: { email: string; children: React
   const router = useRouter();
 
   async function logout() {
-    await fetch("/api/admin/logout", { method: "POST", credentials: "include" });
+    await apiFetch("/api/admin/logout", { method: "POST" });
     router.push(getAdminLoginUrlPublic());
   }
 

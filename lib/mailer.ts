@@ -29,7 +29,7 @@ export async function sendPasswordResetOtpEmail(to: string, otp: string): Promis
 
   const from =
     process.env.EMAIL_FROM?.trim() ||
-    `KULMISCART <${user}>`;
+    `LAAS24 <${user}>`;
 
   await transporter.sendMail({
     from,

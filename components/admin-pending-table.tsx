@@ -62,7 +62,7 @@ export function AdminPendingTable({ pending }: Props) {
               <Button
                 type="button"
                 size="sm"
-                className="ml-auto rounded-xl bg-brand-secondary text-white hover:bg-brand-secondary/90"
+                className="ml-auto rounded-xl bg-brand-secondary text-black hover:bg-brand-secondary/90"
                 disabled={busyId === p.id}
                 onClick={() => void approve(p.id)}
               >

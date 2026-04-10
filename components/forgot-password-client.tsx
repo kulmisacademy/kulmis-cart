@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { AuthTab } from "@/lib/auth-routes";
+import { apiFetch } from "@/lib/api-client";
 
 type Step = "email" | "otp" | "password";
 
@@ -47,7 +48,7 @@ export function ForgotPasswordClient({ initialTab }: Props) {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await apiFetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), role }),
@@ -75,7 +76,7 @@ export function ForgotPasswordClient({ initialTab }: Props) {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/verify-otp", {
+      const res = await apiFetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,10 +113,9 @@ export function ForgotPasswordClient({ initialTab }: Props) {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const res = await apiFetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ resetToken, password }),
       });
       const data = (await res.json().catch(() => ({}))) as {

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { VerificationRequestRow } from "@/lib/platform-db";
+import { apiFetch } from "@/lib/api-client";
 
 export function AdminVerificationClient() {
   const [rows, setRows] = useState<VerificationRequestRow[]>([]);
@@ -14,7 +15,7 @@ export function AdminVerificationClient() {
   async function load() {
     setError(null);
     try {
-      const res = await fetch("/api/admin/verification", { credentials: "include" });
+      const res = await apiFetch("/api/admin/verification");
       const data = (await res.json()) as { requests?: VerificationRequestRow[]; error?: string };
       if (!res.ok) {
         setError(data.error ?? "Failed to load");
@@ -36,9 +37,8 @@ export function AdminVerificationClient() {
     setActing(requestId + action);
     setError(null);
     try {
-      const res = await fetch("/api/admin/verification", {
+      const res = await apiFetch("/api/admin/verification", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ requestId, action }),
       });

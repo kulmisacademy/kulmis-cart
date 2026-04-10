@@ -11,7 +11,20 @@ const patchSchema = z.object({
   status: z.enum(["pending", "accepted", "completed"]),
 });
 
-export async function GET() {
+export async function GET(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/vendor/store-orders`, {
+        headers: { cookie: request.headers.get("cookie") ?? "" },
+      });
+      const data = await r.json().catch(() => ({}));
+      return NextResponse.json(data, { status: r.status });
+    } catch (e) {
+      console.error("[vendor/store-orders GET] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   const cookieStore = await cookies();
   const session = verifyVendorSession(cookieStore.get(getVendorSessionCookieName())?.value);
   if (!session) {
@@ -33,6 +46,24 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/vendor/store-orders`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": request.headers.get("content-type") ?? "application/json",
+          cookie: request.headers.get("cookie") ?? "",
+        },
+        body: await request.clone().text(),
+      });
+      const data = await r.json().catch(() => ({}));
+      return NextResponse.json(data, { status: r.status });
+    } catch (e) {
+      console.error("[vendor/store-orders PATCH] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   const cookieStore = await cookies();
   const session = verifyVendorSession(cookieStore.get(getVendorSessionCookieName())?.value);
   if (!session) {

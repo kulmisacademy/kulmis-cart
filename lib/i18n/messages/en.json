@@ -1,6 +1,6 @@
 {
   "common": {
-    "brand": "KULMISCART"
+    "brand": "LAAS24"
   },
   "nav": {
     "home": "Home",
@@ -21,7 +21,7 @@
     "howToInstall": "How to install",
     "gotIt": "Got it",
     "dismiss": "Not now",
-    "desktopHint": "Chrome or Edge: click the install icon in the address bar, or open the menu (⋮) → Install KulmisCart / Install app.",
+    "desktopHint": "Chrome or Edge: click the install icon in the address bar, or open the menu (⋮) → Install LAAS24 / Install app.",
     "iosHint": "iPhone / iPad: tap Share, then Add to Home Screen.",
     "androidHint": "Android: open the browser menu (⋮), then Install app or Add to Home screen."
   },
@@ -30,7 +30,7 @@
     "title1": "Build Your Store.",
     "title2": "Sell Anywhere",
     "title3": "in Somalia.",
-    "subtitle": "KULMISCART is a simple way to launch your online store, share your link, and receive orders instantly.",
+    "subtitle": "LAAS24 is a simple way to launch your online store, share your link, and receive orders instantly.",
     "ctaPrimary": "Start Selling",
     "ctaSecondary": "Browse Products",
     "trust1": "Launch in minutes",
@@ -83,7 +83,7 @@
   "testimonials": {
     "eyebrow": "Community",
     "title": "Loved by sellers & shoppers",
-    "subtitle": "Real feedback from people building and buying on KULMISCART."
+    "subtitle": "Real feedback from people building and buying on LAAS24."
   },
   "topStores": {
     "eyebrow": "Marketplace",
@@ -101,7 +101,7 @@
     "step5": "Get orders via WhatsApp"
   },
   "footer": {
-    "tagline": "© 2024 KULMISCART. The radiant curator of Somali commerce.",
+    "tagline": "© 2024 LAAS24. The radiant curator of Somali commerce.",
     "shop": "Shop",
     "products": "Products",
     "stores": "Stores",
@@ -212,7 +212,7 @@
       "customer": "Customer",
       "total": "Total",
       "whatsapp": "WhatsApp",
-      "message": "Hi, about your order on KULMISCART."
+      "message": "Hi, about your order on LAAS24."
     },
     "messages": {
       "title": "Messages",

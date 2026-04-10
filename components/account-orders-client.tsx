@@ -11,6 +11,7 @@ import { useCustomerAuth } from "@/lib/customer-auth-context";
 import { FEEDBACK_PRESETS } from "@/lib/feedback-presets";
 import { CustomerMessagesSection } from "@/components/customer-messages-section";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 
 type Props = {
   customer: CustomerPublic;
@@ -51,9 +52,8 @@ function OrderFeedbackBlock({
     setBusy(true);
     setErr(null);
     try {
-      const res = await fetch("/api/customer/feedback", {
+      const res = await apiFetch("/api/customer/feedback", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, presetOption: preset, comment }),
       });
@@ -131,7 +131,7 @@ export function AccountOrdersClient({ customer, initialOrders }: Props) {
   }, [orders]);
 
   async function logout() {
-    await fetch("/api/customer/logout", { method: "POST", credentials: "include" });
+    await apiFetch("/api/customer/logout", { method: "POST" });
     await refresh();
     router.push("/");
   }

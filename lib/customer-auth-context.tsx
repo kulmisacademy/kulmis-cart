@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { apiFetch } from "@/lib/api-client";
 
 export type CustomerSessionUser = {
   id: string;
@@ -33,7 +34,7 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch("/api/customer/me", { credentials: "include" });
+      const res = await apiFetch("/api/customer/me");
       if (!res.ok) {
         setCustomer(null);
         return;

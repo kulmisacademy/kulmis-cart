@@ -1,7 +1,7 @@
 import { BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const TOOLTIP = "Verified store — identity checked by KULMISCART";
+const TOOLTIP = "Verified store — identity checked by LAAS24";
 
 export type VerifiedBadgeProps = {
   className?: string;
@@ -19,11 +19,11 @@ export function VerifiedBadge({ className, size = "md" }: VerifiedBadgeProps) {
 
   return (
     <span
+      data-verified-badge
       title={TOOLTIP}
       className={cn(
-        "inline-flex shrink-0 items-center rounded-full font-semibold text-blue-600",
-        "bg-blue-500/[0.08] shadow-[0_0_12px_-2px_rgba(37,99,235,0.35)] ring-1 ring-blue-500/35",
-        "dark:text-blue-400 dark:bg-blue-500/15 dark:shadow-[0_0_14px_-2px_rgba(96,165,250,0.35)] dark:ring-blue-400/40",
+        "inline-flex shrink-0 items-center rounded-full bg-secondary font-semibold text-black shadow-[0_0_12px_-2px_rgba(250,204,21,0.45)] ring-1 ring-secondary/50",
+        "dark:text-black dark:shadow-[0_0_14px_-2px_rgba(253,224,71,0.35)] dark:ring-secondary/40",
         pad,
         text,
         className,
@@ -31,7 +31,7 @@ export function VerifiedBadge({ className, size = "md" }: VerifiedBadgeProps) {
       role="img"
       aria-label={TOOLTIP}
     >
-      <BadgeCheck className={cn(icon, "shrink-0")} strokeWidth={2.5} aria-hidden />
+      <BadgeCheck className={cn(icon, "shrink-0 text-primary")} strokeWidth={2.5} aria-hidden />
       <span>Verified</span>
     </span>
   );

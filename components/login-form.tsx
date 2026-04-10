@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslations } from "@/lib/locale-context";
 import { vendorPostLoginPath } from "@/lib/internal-nav";
+import { apiFetch } from "@/lib/api-client";
 
 type LoginFormProps = {
   /** Post-login path (e.g. from /auth unified page). */
@@ -34,11 +35,10 @@ export function LoginForm({ nextPath }: LoginFormProps) {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/vendor/login", {
+      const res = await apiFetch("/api/vendor/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password }),
-        credentials: "include",
       });
       const text = await res.text();
       let data: { error?: string } = {};

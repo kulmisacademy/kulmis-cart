@@ -13,6 +13,7 @@ import type { StoreEntitlements } from "@/lib/platform-db";
 import type { VendorDashboardState } from "@/lib/vendor-types";
 import { PlanLimitModal } from "./plan-limit-modal";
 import type { PlanLimitKind } from "./plan-limit-modal";
+import { apiFetch } from "@/lib/api-client";
 
 export type { PlanLimitKind } from "./plan-limit-modal";
 
@@ -54,7 +55,7 @@ export function VendorDashboardProvider({
   const persist = useCallback(async (next: VendorDashboardState) => {
     setSaving(true);
     try {
-      const res = await fetch("/api/vendor/dashboard", {
+      const res = await apiFetch("/api/vendor/dashboard", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(next),
@@ -87,7 +88,7 @@ export function VendorDashboardProvider({
   }, []);
 
   const refreshEntitlements = useCallback(async () => {
-    const res = await fetch("/api/vendor/entitlements");
+    const res = await apiFetch("/api/vendor/entitlements");
     if (!res.ok) return;
     const data = (await res.json()) as { entitlements: StoreEntitlements };
     if (data.entitlements) setEntitlements(data.entitlements);
@@ -95,8 +96,8 @@ export function VendorDashboardProvider({
 
   const refreshDashboard = useCallback(async () => {
     const [dashRes, entRes] = await Promise.all([
-      fetch("/api/vendor/dashboard"),
-      fetch("/api/vendor/entitlements"),
+      apiFetch("/api/vendor/dashboard"),
+      apiFetch("/api/vendor/entitlements"),
     ]);
     if (dashRes.ok) {
       const d = (await dashRes.json()) as VendorDashboardState;

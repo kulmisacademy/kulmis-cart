@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KULMISCART - Multi Vendor Commerce",
+  title: "LAAS24 - Multi Vendor Commerce",
   description: "Build your store and sell anywhere in Somalia.",
-  applicationName: "KulmisCart",
+  applicationName: "LAAS24",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "KulmisCart",
+    title: "LAAS24",
     statusBarStyle: "default",
   },
   formatDetection: {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: light)", color: "#16a34a" },
     { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
   ],
   width: "device-width",

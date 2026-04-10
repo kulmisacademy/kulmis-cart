@@ -11,10 +11,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const product = await getProductById(id);
   if (!product) {
-    return { title: "Product | KULMISCART" };
+    return { title: "Product | LAAS24" };
   }
   return {
-    title: `${product.title} | KULMISCART`,
+    title: `${product.title} | LAAS24`,
     description: product.description,
   };
 }

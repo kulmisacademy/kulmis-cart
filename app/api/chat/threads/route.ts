@@ -8,6 +8,26 @@ import { getCustomerSessionCookieName, verifyCustomerSession } from "@/lib/custo
 import { getVendorSessionCookieName, verifyVendorSession } from "@/lib/vendor-session";
 
 export async function GET(request: Request) {
+  const upstream = process.env.LAAS24_BACKEND_URL?.trim();
+  if (upstream) {
+    try {
+      const url = new URL(request.url);
+      const q = url.searchParams.toString();
+      const r = await fetch(`${upstream.replace(/\/$/, "")}/api/chat/threads${q ? `?${q}` : ""}`, {
+        headers: {
+          cookie: request.headers.get("cookie") ?? "",
+          referer: request.headers.get("referer") ?? "",
+        },
+      });
+      if (r.ok) {
+        const body = await r.json();
+        return NextResponse.json(body);
+      }
+    } catch (e) {
+      console.error("[chat/threads] LAAS24_BACKEND_URL delegate failed:", e);
+    }
+  }
+
   try {
     const dbAvailable = Boolean(process.env.DATABASE_URL?.trim());
     const { searchParams } = new URL(request.url);

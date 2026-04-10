@@ -15,6 +15,23 @@ const withPWA = withPWAInit({
   disable: !pwaEnabled,
   register: true,
   scope: "/",
+  /** Avoid extra SW navigations that can surface Workbox `no-response` on dynamic routes. */
+  cacheOnFrontEndNav: false,
+  aggressiveFrontEndNavCaching: false,
+  /** Merge with plugin defaults instead of replacing runtimeCaching entirely. */
+  extendDefaultRuntimeCaching: true,
+  workboxOptions: {
+    runtimeCaching: [
+      {
+        urlPattern: ({ request }) => request.mode === "navigate",
+        handler: "NetworkFirst",
+        options: {
+          networkTimeoutSeconds: 10,
+          cacheName: "pages-network-first",
+        },
+      },
+    ],
+  },
 });
 
 const nextConfig: NextConfig = {

@@ -65,7 +65,8 @@ export function VendorSubscriptionPage() {
   const { state, entitlements, saving, refreshDashboard, vendor } = useVendorDashboard();
   const [plans, setPlans] = useState<PlanDefinitionRow[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
-  const [banner, setBanner] = useState<string | null>(null);
+  const [plansError, setPlansError] = useState<string | null>(null);
+  const [usageError, setUsageError] = useState<string | null>(null);
   const [usage, setUsage] = useState<UsagePayload | null>(null);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [upgradePlanId, setUpgradePlanId] = useState("");
@@ -76,9 +77,15 @@ export function VendorSubscriptionPage() {
       try {
         const res = await apiFetch("/api/vendor/plans");
         const data = (await res.json()) as { plans?: PlanDefinitionRow[] };
-        if (!cancelled && data.plans) setPlans(data.plans);
+        if (!cancelled && data.plans) {
+          setPlans(data.plans);
+          setPlansError(null);
+        }
       } catch {
-        if (!cancelled) setPlans([]);
+        if (!cancelled) {
+          setPlans([]);
+          setPlansError("Could not load subscription plans.");
+        }
       } finally {
         if (!cancelled) setLoadingPlans(false);
       }
@@ -94,9 +101,15 @@ export function VendorSubscriptionPage() {
       try {
         const res = await apiFetch("/api/vendor/usage");
         const data = (await res.json()) as UsagePayload & { error?: string };
-        if (!cancelled && !data.error) setUsage(data);
+        if (!cancelled && !data.error) {
+          setUsage(data);
+          setUsageError(null);
+        }
       } catch {
-        if (!cancelled) setUsage(null);
+        if (!cancelled) {
+          setUsage(null);
+          setUsageError("Could not load usage data.");
+        }
       }
     })();
     return () => {
@@ -151,9 +164,14 @@ export function VendorSubscriptionPage() {
         </div>
       </div>
 
-      {banner ? (
+      {plansError ? (
         <div className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {banner}
+          {plansError}
+        </div>
+      ) : null}
+      {usageError ? (
+        <div className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {usageError}
         </div>
       ) : null}
 

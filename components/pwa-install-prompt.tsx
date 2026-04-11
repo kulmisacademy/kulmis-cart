@@ -63,8 +63,21 @@ export function PwaInstallPrompt() {
 
   useEffect(() => {
     if (!mounted) return;
-    if (!showStorefrontPwaPrompt(pathname) || !isSecureEnoughForPwa()) return;
-    if (isStandalonePwa() || dismissedRecently()) return;
+
+    const hide = () => {
+      setShowBar(false);
+      setDeferred(null);
+      setHelpOpen(false);
+    };
+
+    if (!showStorefrontPwaPrompt(pathname) || !isSecureEnoughForPwa()) {
+      hide();
+      return;
+    }
+    if (isStandalonePwa() || dismissedRecently()) {
+      hide();
+      return;
+    }
 
     setShowBar(true);
 
@@ -73,7 +86,9 @@ export function PwaInstallPrompt() {
       setDeferred(e as BeforeInstallPromptEvent);
     };
     window.addEventListener("beforeinstallprompt", onBip);
-    return () => window.removeEventListener("beforeinstallprompt", onBip);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBip);
+    };
   }, [mounted, pathname]);
 
   const onDismissBar = useCallback(() => {

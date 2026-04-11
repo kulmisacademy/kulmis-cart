@@ -113,7 +113,6 @@ function tryJoinThread(socket, payload) {
 function broadcastToThread(ioInstance, threadId, message) {
   const room = threadRoom(threadId);
   ioInstance.to(room).emit("chat-message", message);
-  ioInstance.to(room).emit("receiveMessage", message);
 }
 
 function socketIsInThread(socket, threadId) {

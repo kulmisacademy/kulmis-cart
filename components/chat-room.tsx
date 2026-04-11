@@ -50,10 +50,8 @@ function attachSocketMessage(socket: Socket, threadId: string, append: (m: Messa
     }
   };
   socket.on("chat-message", onMsg);
-  socket.on("receiveMessage", onMsg);
   return () => {
     socket.off("chat-message", onMsg);
-    socket.off("receiveMessage", onMsg);
   };
 }
 

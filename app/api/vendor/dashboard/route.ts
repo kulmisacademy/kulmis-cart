@@ -127,7 +127,15 @@ export async function PUT(request: Request) {
   const planUi = uiPlanFromEntitlements(ent);
   const { subscriptionPlan, ...rest } = parsed.data;
   void subscriptionPlan;
-  await saveDashboard(ctx.vendor.id, { ...rest, subscriptionPlan: planUi });
+  try {
+    await saveDashboard(ctx.vendor.id, { ...rest, subscriptionPlan: planUi });
+  } catch (e) {
+    console.error("saveDashboard", e);
+    return NextResponse.json(
+      { error: "Could not save dashboard. Check database connectivity and try again." },
+      { status: 503 },
+    );
+  }
   const s = rest.settings;
   try {
     await patchApprovedVendorStorefrontById(ctx.vendor.id, {

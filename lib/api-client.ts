@@ -13,6 +13,8 @@
  *
  * **`/api/vendor/*`**, **`/api/admin/*`**, **`/api/auth/*`**, **`/api/chat/*`**, **`/api/notifications/*`**:
  * same pattern — session cookies and CORS-safe fetches must target the Next origin, not Railway.
+ *
+ * **`/api/ai/*`**, **`/api/ads/*`**: vendor session + browser `fetch` require same origin (cookies; Railway has no CORS for `laas24.com`).
  */
 
 function trimTrailingSlash(url: string): string {
@@ -43,6 +45,8 @@ function isSameOriginApiPath(path: string): boolean {
   if (p.startsWith("/api/chat/")) return true;
   if (p === "/api/notifications" || p.startsWith("/api/notifications/")) return true;
   if (p.startsWith("/api/marketplace/")) return true;
+  if (p.startsWith("/api/ai/")) return true;
+  if (p.startsWith("/api/ads/")) return true;
   return false;
 }
 

@@ -23,13 +23,9 @@ const withPWA = withPWAInit({
   workboxOptions: {
     runtimeCaching: [
       {
+        /** Network-only for HTML navigations — avoids NetworkFirst empty-cache `no-response` when offline or network fails. */
         urlPattern: ({ request }) => request.mode === "navigate",
-        handler: "NetworkFirst",
-        options: {
-          /** Cold starts / slow mobile networks: avoid Workbox `no-response` when cache is empty. */
-          networkTimeoutSeconds: 30,
-          cacheName: "pages-network-first",
-        },
+        handler: "NetworkOnly",
       },
     ],
   },

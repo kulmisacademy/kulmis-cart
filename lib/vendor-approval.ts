@@ -93,7 +93,11 @@ export async function registerVendorInstant(
   if (await findApprovedVendorByEmail(email)) {
     return { ok: false, error: "This email is already registered." };
   }
-  await removePendingVendorByEmail(email);
+  try {
+    await removePendingVendorByEmail(email);
+  } catch {
+    /* ignore: pending list may live on read-only FS while approved vendors use Postgres */
+  }
 
   const slugs = await getApprovedStoreSlugs();
   const slugSet = new Set(slugs);

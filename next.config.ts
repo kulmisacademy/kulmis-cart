@@ -26,7 +26,8 @@ const withPWA = withPWAInit({
         urlPattern: ({ request }) => request.mode === "navigate",
         handler: "NetworkFirst",
         options: {
-          networkTimeoutSeconds: 10,
+          /** Cold starts / slow mobile networks: avoid Workbox `no-response` when cache is empty. */
+          networkTimeoutSeconds: 30,
           cacheName: "pages-network-first",
         },
       },

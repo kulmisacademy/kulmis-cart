@@ -1,19 +1,14 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { listApprovedVendors } from "@/lib/approved-vendors";
 import { countCustomerOrderLines } from "@/lib/customer/db";
 import { getPendingVendors } from "@/lib/pending-vendors";
 
-const APPROVED = path.join(process.cwd(), "data", "approved-vendors.json");
 const DASH_DIR = path.join(process.cwd(), "data", "vendor-dashboard");
 
 async function readApprovedCount(): Promise<number> {
-  try {
-    const raw = await fs.readFile(APPROVED, "utf-8");
-    const p = JSON.parse(raw) as unknown;
-    return Array.isArray(p) ? p.length : 0;
-  } catch {
-    return 0;
-  }
+  const list = await listApprovedVendors();
+  return list.length;
 }
 
 async function sumOrdersFromDashboardFiles(): Promise<number> {

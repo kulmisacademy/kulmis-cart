@@ -45,3 +45,17 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
   };
   return fetch(apiUrl(path), merged);
 }
+
+/**
+ * Same-origin `/api/*` only. Use when a Route Handler runs on this Next app and is **not** implemented
+ * on `NEXT_PUBLIC_API_URL` (e.g. `POST /api/chat/thread` uses Prisma + cookies on Vercel; Railway has no such route).
+ */
+export async function apiFetchSameOrigin(path: string, init?: RequestInit): Promise<Response> {
+  const p = path.startsWith("/") ? path : `/${path}`;
+  const isBrowser = typeof window !== "undefined";
+  const merged: RequestInit = {
+    ...init,
+    credentials: init?.credentials ?? (isBrowser ? "include" : "same-origin"),
+  };
+  return fetch(p, merged);
+}

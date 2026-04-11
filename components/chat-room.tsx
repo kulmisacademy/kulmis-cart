@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import { Paperclip, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { apiFetch } from "@/lib/api-client";
+import { apiFetch, apiFetchSameOrigin } from "@/lib/api-client";
 
 type Message = {
   id: string;
@@ -79,7 +79,7 @@ async function fetchCreateThread(storeSlug: string): Promise<ThreadOpenResult> {
   const existing = threadOpenByStoreSlug.get(storeSlug);
   if (existing) return existing;
   const p = (async (): Promise<ThreadOpenResult> => {
-    const t = await apiFetch("/api/chat/thread", {
+    const t = await apiFetchSameOrigin("/api/chat/thread", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ storeSlug }),

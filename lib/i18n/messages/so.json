@@ -101,16 +101,14 @@
     "step5": "Hel dalabyada WhatsApp"
   },
   "footer": {
-    "tagline": "© 2024 LAAS24. Wakiilka iftiinka ganacsiga Soomaalida.",
-    "shop": "Iibsiga",
+    "tagline": "Suuqa badan oo ganacsatada ah Soomaaliya — iibi dukaamada la hubiyey, la xiriir iibiyeyaasha.",
+    "shop": "Baadh",
     "products": "Alaabta",
     "stores": "Dukaamada",
-    "company": "Shirkadda",
-    "contact": "Nala soo xiriir",
-    "privacy": "Siyaasadda asturnaanta",
-    "newsletter": "Wargeyska",
-    "emailPlaceholder": "Iimayl",
-    "subscribe": "Dir"
+    "about": "Ku saabsan",
+    "contactHeading": "Xiriir",
+    "whatsappLabel": "+252 61 360 9678",
+    "privacy": "Siyaasadda asturnaanta"
   },
   "vendor": {
     "badge": "Booska ganacsiga",

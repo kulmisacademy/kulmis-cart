@@ -101,16 +101,14 @@
     "step5": "Get orders via WhatsApp"
   },
   "footer": {
-    "tagline": "© 2024 LAAS24. The radiant curator of Somali commerce.",
-    "shop": "Shop",
+    "tagline": "Multi-vendor marketplace for Somalia — shop trusted stores, chat sellers, and track orders.",
+    "shop": "Explore",
     "products": "Products",
     "stores": "Stores",
-    "company": "Company",
-    "contact": "Contact Us",
-    "privacy": "Privacy Policy",
-    "newsletter": "Newsletter",
-    "emailPlaceholder": "Email",
-    "subscribe": "Go"
+    "about": "About",
+    "contactHeading": "Contact",
+    "whatsappLabel": "+252 61 360 9678",
+    "privacy": "Privacy Policy"
   },
   "vendor": {
     "badge": "Vendor dashboard",

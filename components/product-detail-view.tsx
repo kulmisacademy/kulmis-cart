@@ -67,7 +67,7 @@ export function ProductDetailView({ product }: Props) {
       name: product.title,
       price: product.price,
       image: product.image,
-      link: `/products/${product.id}`,
+      link: productUrl(product.id),
       region: product.region,
       storeName: product.storeName,
     }),
@@ -75,10 +75,7 @@ export function ProductDetailView({ product }: Props) {
   );
   const nextPath = pathname || `/products/${product.id}`;
   const { placeOrder, loading: authLoading, isAuthenticated } = useCustomerOrderWhatsApp(nextPath);
-  const [productShareUrl, setProductShareUrl] = useState(() => productUrl(product.id));
-  useEffect(() => {
-    setProductShareUrl(`${window.location.origin}/products/${product.id}`);
-  }, [product.id]);
+  const productShareUrl = productUrl(product.id);
 
   useEffect(() => {
     if (!zoomOpen) return;
@@ -111,15 +108,18 @@ export function ProductDetailView({ product }: Props) {
     }
   }
 
+  const btnClass =
+    "inline-flex w-full min-h-[3rem] items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold touch-manipulation";
+
   return (
     <div className="bg-background pb-8 text-foreground md:pb-8">
-      <div className="mx-auto min-w-0 max-w-brand px-4 py-6 sm:px-6 lg:py-10">
+      <div className="mx-auto min-w-0 max-w-brand px-4 py-4 sm:px-6 sm:py-6 lg:py-10">
         <Link href={storeHref} className="mb-6 inline-flex text-sm font-medium text-brand-primary hover:underline">
           ← Back to store
         </Link>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12">
-          <div className="space-y-4">
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-12">
+          <div className="space-y-4 overflow-x-hidden">
             <button
               type="button"
               aria-label="View product image larger"
@@ -135,7 +135,7 @@ export function ProductDetailView({ product }: Props) {
               onTouchEnd={onGalleryTouchEnd}
             >
               <div className="relative mx-auto flex w-full max-w-full items-center justify-center">
-                <div className="relative aspect-[4/5] w-full max-h-[min(85vh,720px)] min-h-[min(72vw,320px)] sm:min-h-[min(56vw,400px)] lg:max-h-[720px]">
+                <div className="relative mx-auto aspect-[4/5] w-full max-h-[min(400px,85vh)] min-h-[min(72vw,320px)] sm:max-h-[min(85vh,720px)] sm:min-h-[min(56vw,400px)] lg:max-h-[720px]">
                 <Image
                   src={gallery[active] ?? product.image}
                   alt={product.title}
@@ -176,31 +176,31 @@ export function ProductDetailView({ product }: Props) {
             {product.videoUrl ? <ProductVideo url={product.videoUrl} /> : null}
           </div>
 
-          <div>
+          <div className="min-w-0 space-y-6">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">{product.storeName}</p>
               {product.storeVerified ? <VerifiedBadge size="md" /> : null}
             </div>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{product.title}</h1>
-            <div className="mt-4 flex flex-wrap items-baseline gap-3">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{product.title}</h1>
+            <div className="flex flex-wrap items-baseline gap-3">
               <span className="text-3xl font-bold text-foreground">${product.price.toFixed(2)}</span>
               {product.oldPrice != null ? (
                 <span className="text-xl text-muted-foreground line-through">${product.oldPrice.toFixed(2)}</span>
               ) : null}
             </div>
-            <p className="mt-6 text-base leading-relaxed text-muted-foreground">{product.description}</p>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="text-base leading-relaxed text-muted-foreground">{product.description}</p>
+            <p className="text-sm text-muted-foreground">
               Sold by{" "}
               <Link href={storeHref} className="font-semibold text-brand-primary hover:underline">
                 {product.storeName}
               </Link>
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => addItem(product, 1)}
-                className="inline-flex flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
+                className={`${btnClass} border border-border bg-card text-card-foreground transition hover:bg-muted`}
               >
                 <ShoppingCart size={18} aria-hidden />
                 Add to cart
@@ -209,7 +209,7 @@ export function ProductDetailView({ product }: Props) {
                 type="button"
                 disabled={authLoading || orderBusy}
                 onClick={() => void onOrderWhatsApp()}
-                className="inline-flex flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl bg-[#00a884] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#009970] disabled:opacity-60 sm:flex-none"
+                className={`${btnClass} bg-[#00a884] text-white transition hover:bg-[#009970] disabled:opacity-60`}
               >
                 <MessageCircle size={18} aria-hidden />
                 {authLoading ? "Checking…" : orderBusy ? "Opening…" : isAuthenticated ? "Order on WhatsApp" : "Login to order"}
@@ -217,7 +217,7 @@ export function ProductDetailView({ product }: Props) {
               <button
                 type="button"
                 onClick={() => setChatOpen(true)}
-                className="inline-flex flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
+                className={`${btnClass} border border-border bg-card text-card-foreground transition hover:bg-muted`}
               >
                 <MessageCircle size={18} aria-hidden />
                 Chat with Seller
@@ -226,18 +226,18 @@ export function ProductDetailView({ product }: Props) {
                 href={waShare}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-semibold text-card-foreground transition hover:bg-muted sm:flex-none"
+                className={`${btnClass} border border-border bg-card text-card-foreground transition hover:bg-muted`}
               >
-                <Share2 size={18} />
+                <Share2 size={18} aria-hidden />
                 Share product
               </a>
               <CopyLinkButton
-                url={`/products/${product.id}`}
+                url={productUrl(product.id)}
                 label="Copy product link"
-                className="w-full justify-center sm:w-auto"
+                className={`${btnClass} col-span-2 border border-border bg-muted/30 text-card-foreground hover:bg-muted`}
               />
             </div>
-            <p className="mt-4 text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Or add to cart and checkout — we will open WhatsApp with the seller after you place your order.
             </p>
           </div>

@@ -5,6 +5,7 @@ import { ClientTopLoader } from "@/components/client-top-loader";
 import { AppToaster } from "@/components/app-toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CustomerAds } from "@/components/customer-ads";
+import { FloatingWhatsAppSupport } from "@/components/floating-whatsapp-support";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { CartProvider } from "@/lib/cart-context";
@@ -29,6 +30,7 @@ export function Providers({
             <AppToaster />
             <PwaInstallPrompt />
             <MobileBottomNav />
+            <FloatingWhatsAppSupport />
             <CustomerAds />
           </CustomerProvider>
         </ThemeProvider>

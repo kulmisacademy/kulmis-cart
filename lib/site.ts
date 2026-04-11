@@ -26,16 +26,22 @@ export function getSiteUrl(): string {
 }
 
 /**
- * Client-only: normalize any href to the tab’s origin so “Copy link” matches localhost vs production.
+ * Absolute URL for “Copy link” / share. Uses `getSiteUrl()` (`NEXT_PUBLIC_BASE_URL`) so production
+ * links stay on https://laas24.com instead of the preview Vercel hostname.
  */
 export function resolveUrlForBrowserClipboard(url: string): string {
-  if (typeof window === "undefined") return url;
-  try {
-    const u = new URL(url, window.location.origin);
-    return `${window.location.origin}${u.pathname}${u.search}${u.hash}`;
-  } catch {
-    return url.startsWith("/") ? `${window.location.origin}${url}` : url;
+  const base = getSiteUrl().replace(/\/$/, "");
+  const trimmed = url.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    try {
+      const u = new URL(trimmed);
+      return `${base}${u.pathname}${u.search}${u.hash}`;
+    } catch {
+      return trimmed;
+    }
   }
+  const path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return `${base}${path}`;
 }
 
 export function productUrl(productId: string): string {

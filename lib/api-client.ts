@@ -6,6 +6,10 @@
  * **Customer session** routes always stay same-origin: login sets an HttpOnly cookie on the storefront
  * host; if login went to `NEXT_PUBLIC_API_URL`, the cookie would be for the backend domain and
  * Vercel-only handlers (e.g. `POST /api/chat/thread`) would return 401.
+ *
+ * **`/api/marketplace/*`** stays same-origin so public catalog helpers (e.g. cart product-id sync) hit
+ * Next Route Handlers instead of Railway — avoids CORS when the storefront is on a custom domain
+ * (`https://laas24.com`) and `NEXT_PUBLIC_API_URL` points at Railway.
  */
 
 function trimTrailingSlash(url: string): string {
@@ -31,6 +35,7 @@ function isSameOriginApiPath(path: string): boolean {
   const p = pathWithoutQuery(path);
   if (p.startsWith("/api/customer/")) return true;
   if (p.startsWith("/api/chat/thread")) return true;
+  if (p.startsWith("/api/marketplace/")) return true;
   return false;
 }
 

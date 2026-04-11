@@ -1,5 +1,6 @@
 import "server-only";
 import { randomUUID } from "crypto";
+import { cache } from "react";
 import { getSql, pgTableExists } from "@/lib/db";
 
 let ensurePromise: Promise<void> | null = null;
@@ -425,7 +426,7 @@ export async function getStoreVerified(storeSlug: string): Promise<boolean> {
   }
 }
 
-export async function getVerifiedSlugSet(): Promise<Set<string>> {
+export const getVerifiedSlugSet = cache(async function getVerifiedSlugSet(): Promise<Set<string>> {
   if (!dbAvailable()) return new Set();
   try {
     await ensurePlatformTables();
@@ -437,9 +438,11 @@ export async function getVerifiedSlugSet(): Promise<Set<string>> {
   } catch {
     return new Set();
   }
-}
+});
 
-export async function getFeaturedPriorityMap(): Promise<Record<string, number>> {
+export const getFeaturedPriorityMap = cache(async function getFeaturedPriorityMap(): Promise<
+  Record<string, number>
+> {
   if (!dbAvailable()) return {};
   try {
     await ensurePlatformTables();
@@ -455,7 +458,7 @@ export async function getFeaturedPriorityMap(): Promise<Record<string, number>> 
   } catch {
     return {};
   }
-}
+});
 
 export async function setStoreVerified(storeSlug: string, isVerified: boolean): Promise<void> {
   if (!dbAvailable()) throw new Error("Database not configured");

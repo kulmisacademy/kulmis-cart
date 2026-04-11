@@ -3,7 +3,7 @@ import { cache } from "react";
 import { findApprovedVendorById, listApprovedVendors, type ApprovedVendorRecord } from "@/lib/approved-vendors";
 import type { Product, Store } from "@/lib/data";
 import { getFeaturedPriorityMap, getStoreVerified, getVerifiedSlugSet } from "@/lib/platform-db";
-import { loadDashboard } from "@/lib/vendor-dashboard-repository";
+import { loadDashboard, loadDashboardsForVendors } from "@/lib/vendor-dashboard-repository";
 import type { VendorDashboardState } from "@/lib/vendor-types";
 import { buildPublicStorePathSegment, parseVendorIdFromPublicStoreParam } from "@/lib/store-public-path";
 
@@ -11,7 +11,7 @@ import { buildPublicStorePathSegment, parseVendorIdFromPublicStoreParam } from "
 const getVendorsWithDashboardStates = cache(async () => {
   const vendors = await listApprovedVendors();
   if (vendors.length === 0) return [];
-  const states = await Promise.all(vendors.map((v) => loadDashboard(v)));
+  const states = await loadDashboardsForVendors(vendors);
   return vendors.map((vendor, i) => ({ vendor, state: states[i]! }));
 });
 
@@ -95,14 +95,15 @@ function vendorProductToProduct(
 }
 
 export async function getMarketplaceStores(): Promise<Store[]> {
-  const rows = await getVendorsWithDashboardStates();
-  const verified = await getVerifiedSlugSet();
+  const [rows, verified] = await Promise.all([
+    getVendorsWithDashboardStates(),
+    getVerifiedSlugSet(),
+  ]);
   return rows.map(({ vendor, state }) => vendorToStore(vendor, state, verified.has(vendor.storeSlug)));
 }
 
 export async function getStoresByRating(): Promise<Store[]> {
-  const list = await getMarketplaceStores();
-  const priority = await getFeaturedPriorityMap();
+  const [list, priority] = await Promise.all([getMarketplaceStores(), getFeaturedPriorityMap()]);
   return [...list].sort(
     (a, b) =>
       (priority[b.slug] ?? 0) - (priority[a.slug] ?? 0) ||
@@ -112,8 +113,10 @@ export async function getStoresByRating(): Promise<Store[]> {
 }
 
 export async function getMarketplaceProducts(): Promise<Product[]> {
-  const rows = await getVendorsWithDashboardStates();
-  const verified = await getVerifiedSlugSet();
+  const [rows, verified] = await Promise.all([
+    getVendorsWithDashboardStates(),
+    getVerifiedSlugSet(),
+  ]);
   const products: Product[] = [];
   for (const { vendor, state } of rows) {
     const storeVerified = verified.has(vendor.storeSlug);
@@ -138,8 +141,10 @@ export async function getMarketplaceProductIds(): Promise<string[]> {
 
 /** One merged dashboard scan per request — avoids N sequential `loadDashboard` calls. */
 export const getProductById = cache(async function getProductById(id: string): Promise<Product | undefined> {
-  const rows = await getVendorsWithDashboardStates();
-  const verified = await getVerifiedSlugSet();
+  const [rows, verified] = await Promise.all([
+    getVendorsWithDashboardStates(),
+    getVerifiedSlugSet(),
+  ]);
   for (const { vendor, state } of rows) {
     const p = state.products.find((x) => x.id === id);
     if (p) return vendorProductToProduct(p, vendor, state, verified.has(vendor.storeSlug));

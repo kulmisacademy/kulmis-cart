@@ -128,6 +128,47 @@ export async function loadDashboard(vendor: ApprovedVendorRecord): Promise<Vendo
   return fromFile ?? defaults;
 }
 
+/**
+ * Loads all vendor dashboards in one round-trip when using Postgres (avoids N sequential SELECTs).
+ * Falls back to `loadDashboard` per vendor when a row is missing (legacy seed path).
+ */
+export async function loadDashboardsForVendors(
+  vendors: ApprovedVendorRecord[],
+): Promise<VendorDashboardState[]> {
+  if (vendors.length === 0) return [];
+
+  if (!usePostgres()) {
+    return Promise.all(vendors.map((v) => loadDashboard(v)));
+  }
+
+  await ensureVendorDashboardsTable();
+  const sql = getSql();
+  const ids = vendors.map((v) => v.id);
+
+  const rows = (await sql.query(
+    `SELECT vendor_id, state_json FROM sc_vendor_dashboards WHERE vendor_id = ANY($1::text[])`,
+    [ids],
+  )) as { vendor_id: string; state_json: string }[];
+
+  const byId = new Map(rows.map((r) => [r.vendor_id, r.state_json] as const));
+
+  return Promise.all(
+    vendors.map(async (vendor) => {
+      const json = byId.get(vendor.id);
+      const defaults = buildDefaultDashboard(vendor);
+      if (json) {
+        try {
+          const parsed = JSON.parse(json) as Partial<VendorDashboardState>;
+          return mergeLoadedState(defaults, parsed);
+        } catch {
+          return defaults;
+        }
+      }
+      return loadDashboard(vendor);
+    }),
+  );
+}
+
 export async function saveDashboard(vendorId: string, state: VendorDashboardState): Promise<void> {
   const payload = JSON.stringify(state);
 

@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { PageScaffold } from "@/components/page-scaffold";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { formatDateTimeEnUtc } from "@/lib/format-hydration-safe";
 import { getCheckoutDetailForCustomer } from "@/lib/customer/db";
 import { getCustomerFromCookies } from "@/lib/customer/server-auth";
 
@@ -38,7 +39,7 @@ export default async function OrderSummaryPage({ params }: Props) {
           {detail.region} / {detail.district}
         </p>
         <p className="mt-2 text-xs text-muted-foreground">
-          Placed {new Date(detail.createdAt).toLocaleString()}
+          Placed {formatDateTimeEnUtc(detail.createdAt)}
         </p>
 
         <ul className="mt-8 space-y-3">

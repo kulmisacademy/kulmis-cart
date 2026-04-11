@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { BarChart3, Eye, MousePointerClick, ShoppingBag } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "@/lib/locale-context";
+import { formatNumberEn } from "@/lib/format-hydration-safe";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
 
 export function VendorAnalyticsPage() {
@@ -50,7 +51,7 @@ export function VendorAnalyticsPage() {
             <Eye className="size-4 text-brand-primary" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold tabular-nums">{views.toLocaleString()}</p>
+            <p className="text-2xl font-bold tabular-nums">{formatNumberEn(views)}</p>
           </CardContent>
         </Card>
         <Card className="rounded-2xl border-border shadow-sm">
@@ -59,7 +60,7 @@ export function VendorAnalyticsPage() {
             <MousePointerClick className="size-4 text-brand-accent" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold tabular-nums">{clicks.toLocaleString()}</p>
+            <p className="text-2xl font-bold tabular-nums">{formatNumberEn(clicks)}</p>
           </CardContent>
         </Card>
         <Card className="rounded-2xl border-border shadow-sm">

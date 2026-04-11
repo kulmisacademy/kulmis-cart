@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChatPopup } from "@/components/chat-popup";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api-client";
+import { formatDateTimeEnUtc } from "@/lib/format-hydration-safe";
 
 type Thread = {
   id: string;
@@ -44,7 +45,7 @@ export function CustomerMessagesSection() {
                 <div className="min-w-0">
                   <p className="font-medium text-foreground">{t.storeName ?? t.storeSlug}</p>
                   <p className="truncate text-xs text-muted-foreground">{t.lastMessage ?? "No messages yet"}</p>
-                  <p className="text-xs text-muted-foreground">{new Date(t.updatedAt).toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">{formatDateTimeEnUtc(t.updatedAt)}</p>
                 </div>
                 <Button
                   type="button"

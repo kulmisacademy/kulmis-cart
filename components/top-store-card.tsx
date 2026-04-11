@@ -9,6 +9,7 @@ import { publicStoreHref } from "@/lib/store-public-path";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { createWhatsAppStoreHelloLink } from "@/lib/whatsapp";
 import { formatFollowerCount } from "@/lib/format-followers";
+import { formatNumberEn } from "@/lib/format-hydration-safe";
 import { cn } from "@/lib/utils";
 
 export type TopStoreCardProps = {
@@ -110,7 +111,7 @@ export function TopStoreCard({
                 {hasLiveReviews || store.rating > 0 ? displayRating.toFixed(1) : "—"}
               </span>
               <span className="text-xs text-muted-foreground">
-                ({hasLiveReviews || store.totalReviews > 0 ? displayReviews.toLocaleString() : "0"}{" "}
+                ({hasLiveReviews || store.totalReviews > 0 ? formatNumberEn(displayReviews) : "0"}{" "}
                 {displayReviews === 1 ? "review" : "reviews"})
               </span>
               <span className="text-xs font-medium text-muted-foreground">

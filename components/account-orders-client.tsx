@@ -12,6 +12,7 @@ import { FEEDBACK_PRESETS } from "@/lib/feedback-presets";
 import { CustomerMessagesSection } from "@/components/customer-messages-section";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-client";
+import { formatDateTimeEnUtc } from "@/lib/format-hydration-safe";
 
 type Props = {
   customer: CustomerPublic;
@@ -192,7 +193,7 @@ export function AccountOrdersClient({ customer, initialOrders }: Props) {
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-semibold text-foreground">Order</p>
-                      <p className="text-xs text-muted-foreground">{new Date(first.createdAt).toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">{formatDateTimeEnUtc(first.createdAt)}</p>
                       <Link
                         href={`/orders/${checkoutId}`}
                         className="mt-2 inline-block text-xs font-medium text-brand-primary hover:underline"
@@ -257,7 +258,7 @@ export function AccountOrdersClient({ customer, initialOrders }: Props) {
                     ) : null}
                     <p className="text-sm text-muted-foreground">{order.storeName}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {new Date(order.createdAt).toLocaleString()}
+                      {formatDateTimeEnUtc(order.createdAt)}
                     </p>
                     <Link
                       href={order.productUrl}

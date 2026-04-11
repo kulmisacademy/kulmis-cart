@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink, Star, Users } from "lucide-react";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { getAdminStoreProfile } from "@/lib/admin-store-profile";
+import { formatDateTimeEnUtc } from "@/lib/format-hydration-safe";
 import { storeUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -162,7 +163,7 @@ export default async function AdminStoreDetailPage({ params }: Props) {
                 profile.orders.map((o) => (
                   <tr key={o.id} className="border-b border-border/80">
                     <td className="px-4 py-2 text-muted-foreground">
-                      {new Date(o.createdAt).toLocaleString()}
+                      {formatDateTimeEnUtc(o.createdAt)}
                     </td>
                     <td className="px-4 py-2">{o.customerName}</td>
                     <td className="px-4 py-2 font-mono text-xs">{o.customerPhone}</td>

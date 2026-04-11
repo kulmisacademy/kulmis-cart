@@ -8,6 +8,7 @@ import { io, type Socket } from "socket.io-client";
 import { cn } from "@/lib/utils";
 import type { AppNotificationAudience, InAppNotificationRow } from "@/lib/notifications/types";
 import { apiFetch } from "@/lib/api-client";
+import { formatDateTimeShortEnUtc } from "@/lib/format-hydration-safe";
 
 type Props = {
   forRole: AppNotificationAudience;
@@ -168,7 +169,7 @@ function NotificationRow({ n }: { n: InAppNotificationRow }) {
       </p>
       <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{n.message}</p>
       <p className="mt-1 text-[10px] text-muted-foreground">
-        {new Date(n.createdAt).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" })}
+        {formatDateTimeShortEnUtc(n.createdAt)}
       </p>
     </>
   );

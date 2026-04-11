@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useTranslations } from "@/lib/locale-context";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
 import { apiFetch, apiUrl } from "@/lib/api-client";
+import { formatDateTimeEnUtc } from "@/lib/format-hydration-safe";
 
 type ApiLine = {
   id: string;
@@ -195,7 +196,7 @@ export function VendorOrdersPage() {
                             <p className="text-xs text-muted-foreground">
                               {o.customerRegion}, {o.customerDistrict}
                             </p>
-                            <p className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground">{formatDateTimeEnUtc(o.createdAt)}</p>
                           </div>
                           <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold capitalize text-foreground">
                             {o.status}

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiFetch } from "@/lib/api-client";
+import { formatDateTimeEnUtc } from "@/lib/format-hydration-safe";
 
 type Row = {
   checkoutId: string | null;
@@ -96,7 +97,7 @@ export default function AdminOrdersPage() {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.orderLineId} className="border-b border-border/80">
-                  <td className="px-3 py-2 text-muted-foreground">{new Date(r.createdAt).toLocaleString()}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{formatDateTimeEnUtc(r.createdAt)}</td>
                   <td className="px-3 py-2 font-mono text-xs">{r.phone}</td>
                   <td className="px-3 py-2">
                     {r.fullName}

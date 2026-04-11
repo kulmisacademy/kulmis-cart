@@ -11,6 +11,7 @@ import { StoreInventorySearchProvider } from "@/components/store-inventory-searc
 import { StoreProductBrowser } from "@/components/store-product-browser";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatFollowerCount } from "@/lib/format-followers";
+import { formatNumberEn } from "@/lib/format-hydration-safe";
 import {
   getFollowerCountForStore,
   getStoreRatingSummaries,
@@ -125,7 +126,7 @@ export default async function StoreProfilePage({ params }: StoreDetailProps) {
                   <Star className="size-4 fill-[#FACC15] text-[#FACC15]" aria-hidden />
                   <span className="tabular-nums">{trustRating.toFixed(1)}</span>
                   <span className="font-normal text-muted-foreground">
-                    ({trustCount.toLocaleString()} {trustCount === 1 ? "review" : "reviews"})
+                    ({formatNumberEn(trustCount)} {trustCount === 1 ? "review" : "reviews"})
                   </span>
                 </span>
                 <span className="text-muted-foreground">·</span>
@@ -195,7 +196,7 @@ export default async function StoreProfilePage({ params }: StoreDetailProps) {
                 {trustRating.toFixed(1)}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Based on {trustCount.toLocaleString()} customer {trustCount === 1 ? "review" : "reviews"}
+                Based on {formatNumberEn(trustCount)} customer {trustCount === 1 ? "review" : "reviews"}
                 {liveSummary ? "" : trustCount === 0 ? " — be the first to leave feedback after an order." : ""}
               </p>
             </div>

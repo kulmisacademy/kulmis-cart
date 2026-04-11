@@ -7,6 +7,7 @@ import { useTranslations } from "@/lib/locale-context";
 import { cn } from "@/lib/utils";
 import { useVendorDashboard } from "./vendor-dashboard-provider";
 import { apiFetch } from "@/lib/api-client";
+import { formatDateTimeEnUtc, formatNumberEn } from "@/lib/format-hydration-safe";
 
 type StoreInsights = {
   followers: number;
@@ -96,7 +97,7 @@ export function VendorOverview() {
               <Eye className="size-4 shrink-0 text-cyan-500" aria-hidden />
             </CardHeader>
             <CardContent className="pt-0">
-              <p className="text-2xl font-bold tabular-nums text-foreground">{views.toLocaleString()}</p>
+              <p className="text-2xl font-bold tabular-nums text-foreground">{formatNumberEn(views)}</p>
             </CardContent>
           </Card>
           <Card className={cardClass}>
@@ -138,7 +139,7 @@ export function VendorOverview() {
               <Heart className="size-4 shrink-0 text-red-500" aria-hidden />
             </CardHeader>
             <CardContent className="pt-0">
-              <p className="text-2xl font-bold tabular-nums text-foreground">{followers.toLocaleString()}</p>
+              <p className="text-2xl font-bold tabular-nums text-foreground">{formatNumberEn(followers)}</p>
             </CardContent>
           </Card>
         </div>
@@ -162,7 +163,7 @@ export function VendorOverview() {
                 </p>
                 {f.presetOption ? <p className="mt-1 text-sm text-foreground">{f.presetOption}</p> : null}
                 {f.comment ? <p className="mt-1 text-sm text-muted-foreground">{f.comment}</p> : null}
-                <p className="mt-1 text-xs text-muted-foreground">{new Date(f.createdAt).toLocaleString()}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{formatDateTimeEnUtc(f.createdAt)}</p>
               </li>
             ))}
           </ul>

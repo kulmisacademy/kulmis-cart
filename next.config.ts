@@ -36,6 +36,9 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pdfkit"],
+  async redirects() {
+    return [{ source: "/manifest.json", destination: "/manifest.webmanifest", permanent: false }];
+  },
   async headers() {
     return [
       {

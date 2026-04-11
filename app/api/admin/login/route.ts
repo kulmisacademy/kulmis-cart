@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { envAdminSessionIdentity, matchesEnvAdmin } from "@/lib/admin-env-login";
 import { findAdminByEmail } from "@/lib/admins";
 import {
   adminSessionCookieOptions,
@@ -44,21 +45,25 @@ export async function POST(request: Request) {
   }
 
   const admin = await findAdminByEmail(email);
-  if (!admin) {
+
+  let sessionPayload: { aid: string; email: string; exp: number } | null = null;
+
+  if (admin) {
+    const ok = await bcrypt.compare(password, admin.passwordHash);
+    if (!ok) {
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    }
+    const exp = Math.floor(Date.now() / 1000) + SESSION_SEC;
+    sessionPayload = { aid: admin.id, email: admin.email, exp };
+  } else if (matchesEnvAdmin(email, password)) {
+    const exp = Math.floor(Date.now() / 1000) + SESSION_SEC;
+    const { aid, email: envEmail } = envAdminSessionIdentity();
+    sessionPayload = { aid, email: envEmail, exp };
+  } else {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
   }
 
-  const ok = await bcrypt.compare(password, admin.passwordHash);
-  if (!ok) {
-    return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-  }
-
-  const exp = Math.floor(Date.now() / 1000) + SESSION_SEC;
-  const token = signAdminSession({
-    aid: admin.id,
-    email: admin.email,
-    exp,
-  });
+  const token = signAdminSession(sessionPayload);
 
   const cookieStore = await cookies();
   const name = getAdminSessionCookieName();
@@ -79,6 +84,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     role: "admin" as const,
-    admin: { id: admin.id, email: admin.email },
+    admin: { id: sessionPayload.aid, email: sessionPayload.email },
   });
 }

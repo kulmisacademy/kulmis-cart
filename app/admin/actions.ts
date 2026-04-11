@@ -24,6 +24,7 @@ export async function approvePendingVendorAction(
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/dashboard");
   revalidatePath("/admin/vendors");
   return { ok: true };
 }

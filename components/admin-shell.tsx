@@ -21,7 +21,7 @@ import { getAdminLoginUrlPublic } from "@/lib/admin-login-public";
 import { apiFetch } from "@/lib/api-client";
 
 const NAV = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/vendors", label: "Vendors", icon: Users },
   { href: "/admin/stores", label: "Stores", icon: Store },
   { href: "/admin/upgrades", label: "Upgrades", icon: ArrowUpCircle },

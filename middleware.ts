@@ -32,10 +32,6 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const secret = adminLoginSegment();
 
-  if (pathname === "/admin/login" || pathname.startsWith("/admin/login/")) {
-    return new NextResponse(null, { status: 404 });
-  }
-
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length !== 1) {
     return NextResponse.next();
@@ -52,7 +48,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-/** Run on single-segment paths and blocked legacy `/admin/login` (multi-segment paths exit early above). */
+/** Single-segment paths (for optional secret admin URL rewrite); static files excluded. */
 export const config = {
-  matcher: ["/admin/login", "/admin/login/:path*", "/((?!api|_next|_next/static|_next/image|_vercel|favicon.ico|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|_next/static|_next/image|_vercel|favicon.ico|.*\\..*).*)"],
 };

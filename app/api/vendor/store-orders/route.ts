@@ -18,8 +18,10 @@ export async function GET(request: Request) {
       const r = await fetch(`${upstream.replace(/\/$/, "")}/api/vendor/store-orders`, {
         headers: { cookie: request.headers.get("cookie") ?? "" },
       });
-      const data = await r.json().catch(() => ({}));
-      return NextResponse.json(data, { status: r.status });
+      if (r.ok) {
+        const data = await r.json().catch(() => ({}));
+        return NextResponse.json(data, { status: r.status });
+      }
     } catch (e) {
       console.error("[vendor/store-orders GET] LAAS24_BACKEND_URL delegate failed:", e);
     }
@@ -57,8 +59,10 @@ export async function PATCH(request: Request) {
         },
         body: await request.clone().text(),
       });
-      const data = await r.json().catch(() => ({}));
-      return NextResponse.json(data, { status: r.status });
+      if (r.ok) {
+        const data = await r.json().catch(() => ({}));
+        return NextResponse.json(data, { status: r.status });
+      }
     } catch (e) {
       console.error("[vendor/store-orders PATCH] LAAS24_BACKEND_URL delegate failed:", e);
     }

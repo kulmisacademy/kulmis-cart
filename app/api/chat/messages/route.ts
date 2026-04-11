@@ -199,8 +199,10 @@ export async function POST(request: Request) {
         },
         body: await request.clone().text(),
       });
-      const data = await r.json().catch(() => ({}));
-      return NextResponse.json(data, { status: r.status });
+      if (r.ok) {
+        const data = await r.json().catch(() => ({}));
+        return NextResponse.json(data, { status: r.status });
+      }
     } catch (e) {
       console.error("[chat/messages POST] LAAS24_BACKEND_URL delegate failed:", e);
     }

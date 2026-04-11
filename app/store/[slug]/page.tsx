@@ -18,8 +18,9 @@ import {
   listPublicFeedbackForStore,
 } from "@/lib/customer/db";
 import { getProductsByStoreSlug, resolveStoreFromPublicRouteSegment } from "@/lib/marketplace-catalog";
+import { getSiteHostnameForDisplay } from "@/lib/site-display";
 import { publicStoreHref } from "@/lib/store-public-path";
-import { getSiteUrl, storeUrl } from "@/lib/site";
+import { storeUrl } from "@/lib/site";
 
 const defaultBanner =
   "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80";
@@ -69,7 +70,7 @@ export default async function StoreProfilePage({ params }: StoreDetailProps) {
   const { liveSummary, feedbackRows, followerCount } = socialBlock;
   const banner = store.bannerImage ?? defaultBanner;
   const storeLink = storeUrl(store.name, store.vendorId);
-  const siteHost = new URL(getSiteUrl()).hostname;
+  const siteHost = await getSiteHostnameForDisplay();
   const profilePath = publicStoreHref(store.name, store.vendorId);
 
   const trustRating = liveSummary ? Math.round(liveSummary.average * 10) / 10 : store.rating;

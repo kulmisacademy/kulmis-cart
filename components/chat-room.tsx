@@ -6,6 +6,7 @@ import { io, type Socket } from "socket.io-client";
 import { Paperclip, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-client";
+import { useCustomerAuth } from "@/lib/customer-auth-context";
 
 type Message = {
   id: string;
@@ -219,6 +220,7 @@ export function ChatRoom({
   const socketJoinOkRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL?.trim();
+  const { customer, loading: authLoading } = useCustomerAuth();
 
   const sorted = useMemo(
     () => [...messages].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
@@ -247,6 +249,18 @@ export function ChatRoom({
         let tj: ThreadOpenResult;
         if (initialThreadId) {
           tj = { threadId: initialThreadId, persistence: "database" };
+        } else if (viewerRole === "customer") {
+          if (authLoading) {
+            return;
+          }
+          if (!customer) {
+            setNeedsLogin(true);
+            setError("Please login as customer to start chat.");
+            setLoading(false);
+            return;
+          }
+          setLoading(true);
+          tj = await fetchCreateThread(storeSlug);
         } else {
           tj = await fetchCreateThread(storeSlug);
         }
@@ -337,7 +351,7 @@ export function ChatRoom({
       detachSocket?.();
       socketRef.current?.disconnect();
     };
-  }, [initialThreadId, socketUrl, storeSlug]);
+  }, [authLoading, customer, initialThreadId, socketUrl, storeSlug, viewerRole]);
 
   async function sendText() {
     const val = text.trim();

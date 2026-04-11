@@ -15,8 +15,11 @@ export async function GET(request: Request) {
       const r = await fetch(`${upstream.replace(/\/$/, "")}/api/customer/follow-status${q}`, {
         headers: { cookie: request.headers.get("cookie") ?? "" },
       });
-      const data = await r.json().catch(() => ({}));
-      return NextResponse.json(data, { status: r.status });
+      if (r.ok) {
+        const data = await r.json().catch(() => ({}));
+        return NextResponse.json(data, { status: r.status });
+      }
+      /* Upstream 4xx/5xx (e.g. store missing on Railway) — use this deployment’s catalog + DB. */
     } catch (e) {
       console.error("[customer/follow-status] LAAS24_BACKEND_URL delegate failed:", e);
     }

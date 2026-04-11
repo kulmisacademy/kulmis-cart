@@ -10,6 +10,9 @@
  * **`/api/marketplace/*`** stays same-origin so public catalog helpers (e.g. cart product-id sync) hit
  * Next Route Handlers instead of Railway — avoids CORS when the storefront is on a custom domain
  * (`https://laas24.com`) and `NEXT_PUBLIC_API_URL` points at Railway.
+ *
+ * **`/api/vendor/*`**, **`/api/admin/*`**, **`/api/auth/*`**, **`/api/chat/*`**, **`/api/notifications/*`**:
+ * same pattern — session cookies and CORS-safe fetches must target the Next origin, not Railway.
  */
 
 function trimTrailingSlash(url: string): string {
@@ -30,11 +33,15 @@ function pathWithoutQuery(path: string): string {
   return q === -1 ? p : p.slice(0, q);
 }
 
-/** Must use the Next origin so session cookies match Route Handlers on Vercel. */
+/** Must use the Next origin so session cookies match Route Handlers and CORS succeeds on custom domain. */
 function isSameOriginApiPath(path: string): boolean {
   const p = pathWithoutQuery(path);
   if (p.startsWith("/api/customer/")) return true;
-  if (p.startsWith("/api/chat/thread")) return true;
+  if (p.startsWith("/api/vendor/")) return true;
+  if (p.startsWith("/api/admin/")) return true;
+  if (p.startsWith("/api/auth/")) return true;
+  if (p.startsWith("/api/chat/")) return true;
+  if (p === "/api/notifications" || p.startsWith("/api/notifications/")) return true;
   if (p.startsWith("/api/marketplace/")) return true;
   return false;
 }
